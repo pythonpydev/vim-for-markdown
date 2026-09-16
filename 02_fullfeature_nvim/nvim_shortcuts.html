@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Neovim Markdown Shortcuts Reference</title>
+<style>
+  :root {
+    --bg: #1e1e2e;
+    --fg: #cdd6f4;
+    --accent: #89b4fa;
+    --card: #292c3c;
+    --key: #313244;
+    --border: #45475a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 2rem;
+    line-height: 1.5;
+  }
+  h1 { font-size: 1.8rem; margin-bottom: 0.25rem; }
+  .subtitle { color: #a6adc8; margin-bottom: 1.5rem; }
+  .search-box {
+    width: 100%;
+    max-width: 400px;
+    padding: 0.6rem 0.9rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--fg);
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.25rem;
+  }
+  section.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+  }
+  section.card h2 {
+    font-size: 1.1rem;
+    margin-top: 0;
+    color: var(--accent);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.4rem;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+  tr.hidden { display: none; }
+  td { padding: 0.3rem 0.2rem; vertical-align: top; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  td.key { white-space: nowrap; width: 1%; }
+  kbd {
+    background: var(--key);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+    font-family: "SF Mono", Consolas, Monaco, monospace;
+    font-size: 0.85rem;
+    color: #f9e2af;
+  }
+  footer { margin-top: 2.5rem; color: #6c7086; font-size: 0.85rem; }
+  .count { color: #6c7086; font-size: 0.85rem; margin-bottom: 1rem; }
+  section.setup {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+  }
+  section.setup h2 { margin-top: 0; color: var(--accent); }
+  section.setup h3 { color: var(--fg); margin-bottom: 0.4rem; }
+  section.setup ol, section.setup ul { margin-top: 0.3rem; padding-left: 1.4rem; }
+  section.setup li { margin-bottom: 0.5rem; }
+  pre {
+    background: var(--key);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.7rem 0.9rem;
+    overflow-x: auto;
+    font-family: "SF Mono", Consolas, Monaco, monospace;
+    font-size: 0.85rem;
+  }
+  .platform-cols {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+  .badge {
+    display: inline-block;
+    background: var(--key);
+    color: #f9e2af;
+    border-radius: 4px;
+    padding: 0.05rem 0.5rem;
+    font-size: 0.75rem;
+    margin-left: 0.4rem;
+  }
+</style>
+</head>
+<body>
+
+<h1>Neovim Markdown Shortcuts Reference</h1>
+<div class="subtitle">Full command reference for the full-feature Neovim markdown setup</div>
+
+<section class="setup">
+<h2>Setup Instructions</h2>
+
+<div class="platform-cols">
+
+<div>
+<h3>Linux</h3>
+<ol>
+<li>Install Neovim (0.10+; this config targets 0.11+/0.12), plus the tools plugins need to build things:
+<pre>sudo apt install neovim git pandoc wkhtmltopdf nodejs npm build-essential</pre>
+(Debian/Ubuntu; use <kbd>dnf</kbd>/<kbd>pacman</kbd> etc. on other distros. <kbd>build-essential</kbd> supplies <kbd>gcc</kbd>, needed to compile Treesitter parsers.)
+</li>
+<li>Install the Tree-sitter CLI (nvim-treesitter's main branch shells out to it to compile parsers):
+<pre>npm install -g tree-sitter-cli</pre>
+</li>
+<li>Run the bundled setup script from inside this folder — it checks the dependencies above, offers to install the Tree-sitter CLI if missing, and symlinks this project to <kbd>~/.config/nvim</kbd> (backing up any existing config first, with confirmation):
+<pre>./setup.sh</pre>
+Or do it by hand instead: back up anything existing, then symlink this whole directory as your Neovim config folder:
+<pre>mv ~/.config/nvim ~/.config/nvim.bak   # back up anything existing first
+ln -s /home/ed/MEGA/app/vim_for_markdown/02_fullfeature_nvim ~/.config/nvim</pre>
+or run Neovim with an isolated config so it doesn't touch your normal setup:
+<pre>NVIM_APPNAME=nvim-markdown nvim</pre>
+after symlinking/copying this folder to <kbd>~/.config/nvim-markdown</kbd> instead.
+</li>
+<li>Launch Neovim once and wait. On first run, <kbd>lazy.nvim</kbd> clones every plugin and <kbd>mason.nvim</kbd> installs the language servers (<kbd>html</kbd>, <kbd>cssls</kbd>, <kbd>pyright</kbd>, <kbd>marksman</kbd>) automatically — this needs network access and takes a minute or two:
+<pre>nvim</pre>
+Run <kbd>:Lazy</kbd> to watch plugin install progress, or <kbd>:Mason</kbd> to watch language server install progress.
+</li>
+<li>Open a markdown file to confirm it all works:
+<pre>nvim notes.md</pre>
+</li>
+</ol>
+</div>
+
+<div>
+<h3>Windows</h3>
+<ol>
+<li>Install Neovim, Git, Pandoc, Node.js, and a C compiler:
+<pre>winget install Neovim.Neovim
+winget install Git.Git
+winget install JohnMacFarlane.Pandoc
+winget install wkhtmltopdf.wkhtmltopdf
+winget install OpenJS.NodeJS
+winget install --id BurntSushi.ripgrep.MSVC</pre>
+For the C compiler needed to build Treesitter parsers, install the
+<a href="https://visualstudio.microsoft.com/visual-cpp-build-tools/" style="color:var(--accent)">Visual Studio Build Tools</a>
+("Desktop development with C++" workload), or use the compiler bundled with
+<a href="https://www.msys2.org/" style="color:var(--accent)">MSYS2</a>/MinGW instead.
+</li>
+<li>Install the Tree-sitter CLI:
+<pre>npm install -g tree-sitter-cli</pre>
+</li>
+<li>Find/create your Neovim config folder — normally:
+<pre>$env:LOCALAPPDATA\nvim</pre>
+Copy (or symlink, from an elevated PowerShell) this project's folder there:
+<pre>New-Item -ItemType SymbolicLink -Path "$env:LOCALAPPDATA\nvim" -Target "C:\path\to\vim_for_markdown\02_fullfeature_nvim"</pre>
+</li>
+<li>Launch Neovim once and wait for <kbd>lazy.nvim</kbd> and <kbd>mason.nvim</kbd> to finish installing plugins/language servers (needs network access):
+<pre>nvim</pre>
+</li>
+<li>Open a markdown file to confirm it all works:
+<pre>nvim notes.md</pre>
+The bundled preview/export commands use <kbd>xdg-open</kbd> (Linux) to launch the browser. On Windows, edit <kbd>lua/config/markdown-tools.lua</kbd> and replace <kbd>xdg-open</kbd> with <kbd>cmd /c start</kbd> so previews open in your default browser.
+</li>
+</ol>
+</div>
+
+</div>
+</section>
+
+<section class="setup">
+<h2>What This Setup Gives You</h2>
+<p style="color:#a6adc8;margin-top:0;">
+The leader key in this config is <kbd>Space</kbd> (not <kbd>\</kbd> as in plain Vim). Once set up, opening a <kbd>.md</kbd> file gives you:
+</p>
+<ul>
+<li><strong>Light/dark colour theme toggle</strong> — <kbd>&lt;leader&gt;d</kbd> switches between Catppuccin Latte (light) and Catppuccin Mocha (dark); starts in dark mode.</li>
+<li><strong>Real syntax highlighting via Treesitter</strong> — markdown, embedded HTML/CSS/Python/YAML front matter are all parsed and highlighted accurately, not just pattern-matched.</li>
+<li><strong>Concealment / rendered markdown</strong> — headings, bold/italic, bullets and horizontal rules are displayed formatted in-buffer instead of showing raw <kbd>**</kbd>/<kbd>_</kbd>/<kbd>#</kbd> symbols (via render-markdown.nvim).</li>
+<li><strong>Live-reloading browser preview</strong> — <kbd>&lt;leader&gt;p</kbd> opens a scroll-synced live preview in your browser that updates as you type.</li>
+<li><strong>Static HTML/PDF export</strong> — <kbd>&lt;leader&gt;eh</kbd> exports to a standalone HTML file and opens it; <kbd>&lt;leader&gt;ep</kbd> exports straight to PDF (both via Pandoc).</li>
+<li><strong>Table auto-formatting</strong> — toggle with <kbd>&lt;leader&gt;tm</kbd>; markdown tables realign their <kbd>|</kbd> columns as you edit.</li>
+<li><strong>Auto-continuing lists</strong> — pressing Enter inside a bullet or numbered list automatically inserts the next marker.</li>
+<li><strong>Folding by heading</strong> — collapse/expand sections with <kbd>za</kbd>/<kbd>zo</kbd>/<kbd>zc</kbd> (folds start open).</li>
+<li><strong>Distraction-free writing mode</strong> — <kbd>&lt;leader&gt;z</kbd> toggles a centered, chrome-free writing view.</li>
+<li><strong>Word count / reading time</strong> — shown live in the statusline whenever editing a markdown file.</li>
+<li><strong>Table of contents generation</strong> — <kbd>&lt;leader&gt;tc</kbd> inserts/updates a ToC built from your headings.</li>
+<li><strong>Internal link checking</strong> — <kbd>&lt;leader&gt;lc</kbd> reports any <kbd>[text](#anchor)</kbd> link that doesn't match a heading in the file; <kbd>gf</kbd> jumps to another markdown file referenced by a relative link.</li>
+<li><strong>Snippets</strong> — common markdown/HTML/Python boilerplate (tables, code fences, front matter, etc.) available via completion while typing.</li>
+<li><strong>LSP-powered autocomplete</strong> — real autocomplete, hover docs (<kbd>K</kbd>), go-to-definition (<kbd>gd</kbd>) for HTML, CSS and Python files, plus a markdown language server for heading/link awareness.</li>
+<li><strong>Git integration</strong> — added/changed/removed line markers in the gutter, wherever your markdown notes live in a git repo.</li>
+<li><strong>Session persistence</strong> — <kbd>&lt;leader&gt;sl</kbd> restores your last session (open files, cursor position, window layout).</li>
+<li><strong>Fuzzy file finding</strong> — <kbd>&lt;leader&gt;ff</kbd> to open any file by fuzzy name, <kbd>&lt;leader&gt;fr</kbd> for recently-opened files.</li>
+<li><strong>Quick "save as"</strong> — <kbd>&lt;leader&gt;sa</kbd> prompts for a new filename.</li>
+<li><strong>Filetype switching</strong> — force the buffer to HTML/Python/CSS/Markdown highlighting and LSP with <kbd>&lt;leader&gt;fh</kbd> / <kbd>&lt;leader&gt;fp</kbd> / <kbd>&lt;leader&gt;fc</kbd> / <kbd>&lt;leader&gt;fm</kbd>.</li>
+<li><strong>All of standard Vim</strong> — every normal Vim/Neovim motion, operator, and command below still works exactly as usual.</li>
+</ul>
+</section>
+
+<input type="text" class="search-box" id="search" placeholder="Filter shortcuts... (e.g. 'delete', 'preview', 'window')" oninput="filterShortcuts()">
+<div class="count" id="count"></div>
+
+<div class="grid" id="grid">
+
+<section class="card">
+<h2>This Setup's Custom Shortcuts <span class="badge">leader = Space</span></h2>
+<table>
+<tr><td class="key"><kbd>&lt;leader&gt;p</kbd></td><td>Toggle live browser preview (markdown-preview.nvim)</td></tr>
+<tr><td class="key"><kbd>&lt;leader&gt;eh</kbd></td><td>Export to HTML and open in browser</td></tr>
+<tr><td class="key"><kbd>&lt;leader&gt;ep</kbd></td><td>Export to PDF</td></tr>
+<tr><td class="key"><kbd>&lt;leader&gt;lc</kbd></td><td>Check internal <kbd>[text](#anchor)</kbd> links resolve</td></tr>
+<tr><td class="key"><kbd>&lt;leader&gt;tm</kbd></td><td>Toggle table mode (auto-align tables)</td></tr>
+<tr><td class="key"><kbd>&lt;leader&gt;tc</kbd></td><td>Insert/update table of contents</td></tr>
+<tr><td class="key"><kbd>&lt;leader&gt;z</kbd></td><td>Toggle zen (distraction-free) mode</td></tr>
+<tr><td class="key"><kbd>&lt;leader&gt;ts</kbd></td><td>Toggle spell-check</td></tr>
+<tr><td class="key"><kbd>&lt;leader&gt;d</kbd></td><td>Toggle light/dark colour theme</td></tr>
+<tr><td class="key"><kbd>&lt;leader&gt;sa</kbd></td><td>Save as... (prompts for filename)</td></tr>
+<tr><td class="key"><kbd>&lt;leader&gt;w</kbd></td><td>Save file</td></tr>
+<tr><td class="key"><kbd>&lt;leader&gt;q</kbd></td><td>Quit</td></tr>
+<tr><td class="key"><kbd>&lt;leader&gt;fh</kbd></td><td>Switch filetype to HTML</td></tr>
+<tr><td class="key"><kbd>&lt;leader&gt;fp</kbd></td><td>Switch filetype to Python</td></tr>
+<tr><td class="key"><kbd>&lt;leader&gt;fc</kbd></td><td>Switch filetype to CSS</td></tr>
+<tr><td class="key"><kbd>&lt;leader&gt;fm</kbd></td><td>Switch filetype back to Markdown</td></tr>
+<tr><td class="key"><kbd>&lt;leader&gt;ff</kbd></td><td>Find file (Telescope)</td></tr>
+<tr><td class="key"><kbd>&lt;leader&gt;fg</kbd></td><td>Grep across project (Telescope)</td></tr>
+<tr><td class="key"><kbd>&lt;leader&gt;fb</kbd></td><td>Find open buffer (Telescope)</td></tr>
+<tr><td class="key"><kbd>&lt;leader&gt;fr</kbd></td><td>Recently opened files (Telescope)</td></tr>
+<tr><td class="key"><kbd>&lt;leader&gt;ss</kbd></td><td>Restore a saved session</td></tr>
+<tr><td class="key"><kbd>&lt;leader&gt;sl</kbd></td><td>Restore last session</td></tr>
+<tr><td class="key"><kbd>&lt;leader&gt;rn</kbd></td><td>LSP: rename symbol</td></tr>
+<tr><td class="key"><kbd>&lt;leader&gt;ca</kbd></td><td>LSP: code action</td></tr>
+<tr><td class="key"><kbd>gd</kbd></td><td>LSP: go to definition</td></tr>
+<tr><td class="key"><kbd>K</kbd></td><td>LSP: hover documentation</td></tr>
+<tr><td class="key"><kbd>Ctrl-h/j/k/l</kbd></td><td>Move focus between windows</td></tr>
+</table>
+</section>
+
+<section class="card">
+<h2>Modes</h2>
+<table>
+<tr><td class="key"><kbd>i</kbd></td><td>Insert before cursor</td></tr>
+<tr><td class="key"><kbd>I</kbd></td><td>Insert at start of line</td></tr>
+<tr><td class="key"><kbd>a</kbd></td><td>Insert after cursor (append)</td></tr>
+<tr><td class="key"><kbd>A</kbd></td><td>Insert at end of line</td></tr>
+<tr><td class="key"><kbd>o</kbd></td><td>Open new line below and insert</td></tr>
+<tr><td class="key"><kbd>O</kbd></td><td>Open new line above and insert</td></tr>
+<tr><td class="key"><kbd>Esc</kbd></td><td>Return to Normal mode</td></tr>
+<tr><td class="key"><kbd>v</kbd></td><td>Visual mode (character-wise)</td></tr>
+<tr><td class="key"><kbd>V</kbd></td><td>Visual line mode</td></tr>
+<tr><td class="key"><kbd>Ctrl-v</kbd></td><td>Visual block mode</td></tr>
+<tr><td class="key"><kbd>R</kbd></td><td>Replace mode</td></tr>
+<tr><td class="key"><kbd>gi</kbd></td><td>Insert at last insert position</td></tr>
+<tr><td class="key"><kbd>:</kbd></td><td>Command-line mode</td></tr>
+</table>
+</section>
+
+<section class="card">
+<h2>Cursor Movement (basic)</h2>
+<table>
+<tr><td class="key"><kbd>h j k l</kbd></td><td>Left, down, up, right</td></tr>
+<tr><td class="key"><kbd>w</kbd></td><td>Next word start</td></tr>
+<tr><td class="key"><kbd>W</kbd></td><td>Next WORD start (whitespace-separated)</td></tr>
+<tr><td class="key"><kbd>e</kbd></td><td>End of word</td></tr>
+<tr><td class="key"><kbd>E</kbd></td><td>End of WORD</td></tr>
+<tr><td class="key"><kbd>b</kbd></td><td>Back to word start</td></tr>
+<tr><td class="key"><kbd>B</kbd></td><td>Back to WORD start</td></tr>
+<tr><td class="key"><kbd>0</kbd></td><td>Start of line</td></tr>
+<tr><td class="key"><kbd>^</kbd></td><td>First non-blank character of line</td></tr>
+<tr><td class="key"><kbd>$</kbd></td><td>End of line</td></tr>
+<tr><td class="key"><kbd>f{char}</kbd></td><td>Jump to next occurrence of char</td></tr>
+<tr><td class="key"><kbd>F{char}</kbd></td><td>Jump to previous occurrence of char</td></tr>
+<tr><td class="key"><kbd>t{char}</kbd></td><td>Jump till before next occurrence of char</td></tr>
+<tr><td class="key"><kbd>;</kbd></td><td>Repeat last f/t/F/T</td></tr>
+<tr><td class="key"><kbd>,</kbd></td><td>Repeat last f/t/F/T in opposite direction</td></tr>
+</table>
+</section>
+
+<section class="card">
+<h2>Cursor Movement (lines &amp; screen)</h2>
+<table>
+<tr><td class="key"><kbd>gg</kbd></td><td>Go to first line of file</td></tr>
+<tr><td class="key"><kbd>G</kbd></td><td>Go to last line of file</td></tr>
+<tr><td class="key"><kbd>{n}G</kbd></td><td>Go to line n</td></tr>
+<tr><td class="key"><kbd>H</kbd></td><td>Top of screen</td></tr>
+<tr><td class="key"><kbd>M</kbd></td><td>Middle of screen</td></tr>
+<tr><td class="key"><kbd>L</kbd></td><td>Bottom of screen</td></tr>
+<tr><td class="key"><kbd>Ctrl-d</kbd></td><td>Scroll half page down</td></tr>
+<tr><td class="key"><kbd>Ctrl-u</kbd></td><td>Scroll half page up</td></tr>
+<tr><td class="key"><kbd>zz</kbd></td><td>Center current line on screen</td></tr>
+<tr><td class="key"><kbd>{</kbd></td><td>Previous paragraph/blank line</td></tr>
+<tr><td class="key"><kbd>}</kbd></td><td>Next paragraph/blank line</td></tr>
+<tr><td class="key"><kbd>%</kbd></td><td>Jump to matching bracket/paren</td></tr>
+<tr><td class="key"><kbd>Ctrl-o</kbd></td><td>Jump to older cursor position</td></tr>
+<tr><td class="key"><kbd>Ctrl-i</kbd></td><td>Jump to newer cursor position</td></tr>
+</table>
+</section>
+
+<section class="card">
+<h2>Editing / Deleting</h2>
+<table>
+<tr><td class="key"><kbd>x</kbd></td><td>Delete character under cursor</td></tr>
+<tr><td class="key"><kbd>dd</kbd></td><td>Delete (cut) current line</td></tr>
+<tr><td class="key"><kbd>dw</kbd></td><td>Delete to next word start</td></tr>
+<tr><td class="key"><kbd>d$</kbd> / <kbd>D</kbd></td><td>Delete to end of line</td></tr>
+<tr><td class="key"><kbd>d{motion}</kbd></td><td>Delete over any motion (generic)</td></tr>
+<tr><td class="key"><kbd>cc</kbd> / <kbd>S</kbd></td><td>Change (delete + insert) whole line</td></tr>
+<tr><td class="key"><kbd>cw</kbd></td><td>Change to next word start</td></tr>
+<tr><td class="key"><kbd>C</kbd></td><td>Change to end of line</td></tr>
+<tr><td class="key"><kbd>r{char}</kbd></td><td>Replace single character</td></tr>
+<tr><td class="key"><kbd>s</kbd></td><td>Delete character and insert</td></tr>
+<tr><td class="key"><kbd>~</kbd></td><td>Toggle case of character under cursor</td></tr>
+<tr><td class="key"><kbd>J</kbd></td><td>Join line below with current line</td></tr>
+<tr><td class="key"><kbd>u</kbd></td><td>Undo</td></tr>
+<tr><td class="key"><kbd>Ctrl-r</kbd></td><td>Redo</td></tr>
+<tr><td class="key"><kbd>.</kbd></td><td>Repeat last change</td></tr>
+</table>
+</section>
+
+<section class="card">
+<h2>Copy / Paste (Yank)</h2>
+<table>
+<tr><td class="key"><kbd>yy</kbd> / <kbd>Y</kbd></td><td>Yank (copy) current line</td></tr>
+<tr><td class="key"><kbd>yw</kbd></td><td>Yank word</td></tr>
+<tr><td class="key"><kbd>y{motion}</kbd></td><td>Yank over any motion (generic)</td></tr>
+<tr><td class="key"><kbd>p</kbd></td><td>Paste after cursor / below line</td></tr>
+<tr><td class="key"><kbd>P</kbd></td><td>Paste before cursor / above line</td></tr>
+<tr><td class="key"><kbd>"{reg}y</kbd></td><td>Yank into named register</td></tr>
+<tr><td class="key"><kbd>"{reg}p</kbd></td><td>Paste from named register</td></tr>
+</table>
+</section>
+
+<section class="card">
+<h2>Visual Mode</h2>
+<table>
+<tr><td class="key"><kbd>v</kbd></td><td>Start character-wise visual selection</td></tr>
+<tr><td class="key"><kbd>V</kbd></td><td>Start line-wise visual selection</td></tr>
+<tr><td class="key"><kbd>Ctrl-v</kbd></td><td>Start block-wise visual selection</td></tr>
+<tr><td class="key"><kbd>gv</kbd></td><td>Reselect last visual selection</td></tr>
+<tr><td class="key"><kbd>d</kbd> / <kbd>x</kbd></td><td>Delete selection</td></tr>
+<tr><td class="key"><kbd>y</kbd></td><td>Yank selection</td></tr>
+<tr><td class="key"><kbd>c</kbd></td><td>Change selection</td></tr>
+<tr><td class="key"><kbd>></kbd> / <kbd>&lt;</kbd></td><td>Indent / un-indent selection</td></tr>
+<tr><td class="key"><kbd>=</kbd></td><td>Auto-indent selection</td></tr>
+<tr><td class="key"><kbd>J</kbd></td><td>Join selected lines</td></tr>
+</table>
+</section>
+
+<section class="card">
+<h2>Search &amp; Replace</h2>
+<table>
+<tr><td class="key"><kbd>/pattern</kbd></td><td>Search forward</td></tr>
+<tr><td class="key"><kbd>?pattern</kbd></td><td>Search backward</td></tr>
+<tr><td class="key"><kbd>n</kbd> / <kbd>N</kbd></td><td>Repeat search, same/opposite direction</td></tr>
+<tr><td class="key"><kbd>*</kbd> / <kbd>#</kbd></td><td>Search word under cursor forward/backward</td></tr>
+<tr><td class="key"><kbd>:noh</kbd></td><td>Clear search highlighting</td></tr>
+<tr><td class="key"><kbd>:%s/old/new/g</kbd></td><td>Replace all occurrences in file</td></tr>
+<tr><td class="key"><kbd>:%s/old/new/gc</kbd></td><td>Replace all, with confirmation</td></tr>
+</table>
+</section>
+
+<section class="card">
+<h2>Files &amp; Buffers</h2>
+<table>
+<tr><td class="key"><kbd>:w</kbd></td><td>Write (save) file</td></tr>
+<tr><td class="key"><kbd>:w {file}</kbd> / <kbd>:saveas</kbd></td><td>Save as</td></tr>
+<tr><td class="key"><kbd>:q</kbd></td><td>Quit</td></tr>
+<tr><td class="key"><kbd>:wq</kbd> / <kbd>ZZ</kbd></td><td>Save and quit</td></tr>
+<tr><td class="key"><kbd>:e {file}</kbd></td><td>Edit (open) a file</td></tr>
+<tr><td class="key"><kbd>:bn</kbd> / <kbd>:bp</kbd></td><td>Next / previous buffer</td></tr>
+<tr><td class="key"><kbd>:bd</kbd></td><td>Delete (close) buffer</td></tr>
+<tr><td class="key"><kbd>:ls</kbd></td><td>List open buffers</td></tr>
+<tr><td class="key"><kbd>gf</kbd></td><td>Go to file under cursor (resolves markdown links)</td></tr>
+</table>
+</section>
+
+<section class="card">
+<h2>Windows &amp; Tabs</h2>
+<table>
+<tr><td class="key"><kbd>:split</kbd> / <kbd>:vsplit</kbd></td><td>Horizontal / vertical split</td></tr>
+<tr><td class="key"><kbd>Ctrl-w w</kbd></td><td>Cycle to next window</td></tr>
+<tr><td class="key"><kbd>Ctrl-h/j/k/l</kbd></td><td>Move to window left/down/up/right (mapped in this config)</td></tr>
+<tr><td class="key"><kbd>Ctrl-w q</kbd></td><td>Close current window</td></tr>
+<tr><td class="key"><kbd>Ctrl-w =</kbd></td><td>Equalize window sizes</td></tr>
+<tr><td class="key"><kbd>:tabnew</kbd></td><td>Open new tab</td></tr>
+<tr><td class="key"><kbd>gt</kbd> / <kbd>gT</kbd></td><td>Next / previous tab</td></tr>
+</table>
+</section>
+
+<section class="card">
+<h2>Marks &amp; Registers</h2>
+<table>
+<tr><td class="key"><kbd>m{a-z}</kbd></td><td>Set mark at cursor position</td></tr>
+<tr><td class="key"><kbd>'{a-z}</kbd> / <kbd>`{a-z}</kbd></td><td>Jump to mark (line / exact position)</td></tr>
+<tr><td class="key"><kbd>:marks</kbd></td><td>List all marks</td></tr>
+<tr><td class="key"><kbd>:reg</kbd></td><td>List all registers</td></tr>
+<tr><td class="key"><kbd>qa</kbd> ... <kbd>q</kbd></td><td>Record macro into register a, then stop</td></tr>
+<tr><td class="key"><kbd>@a</kbd></td><td>Play macro from register a</td></tr>
+<tr><td class="key"><kbd>@@</kbd></td><td>Repeat last played macro</td></tr>
+</table>
+</section>
+
+<section class="card">
+<h2>Text Objects (used with d/c/y/v)</h2>
+<table>
+<tr><td class="key"><kbd>iw</kbd> / <kbd>aw</kbd></td><td>Inner word / a word</td></tr>
+<tr><td class="key"><kbd>ip</kbd> / <kbd>ap</kbd></td><td>Inner paragraph / a paragraph</td></tr>
+<tr><td class="key"><kbd>i"</kbd> / <kbd>a"</kbd></td><td>Inner / a quoted string</td></tr>
+<tr><td class="key"><kbd>i(</kbd> / <kbd>a(</kbd></td><td>Inner / a parentheses block</td></tr>
+<tr><td class="key"><kbd>i{</kbd> / <kbd>a{</kbd></td><td>Inner / a braces block</td></tr>
+<tr><td class="key"><kbd>it</kbd> / <kbd>at</kbd></td><td>Inner / a tag block (HTML)</td></tr>
+<tr>
+<td colspan="2" style="font-size:0.85rem;color:#a6adc8;padding-top:0.5rem;">
+Example: <kbd>di"</kbd> deletes inside quotes, <kbd>ca(</kbd> changes a parenthesised block including parens.
+</td>
+</tr>
+</table>
+</section>
+
+<section class="card">
+<h2>Folding (Treesitter-based)</h2>
+<table>
+<tr><td class="key"><kbd>zf{motion}</kbd></td><td>Create fold over motion</td></tr>
+<tr><td class="key"><kbd>zo</kbd> / <kbd>zc</kbd> / <kbd>za</kbd></td><td>Open / close / toggle fold</td></tr>
+<tr><td class="key"><kbd>zR</kbd> / <kbd>zM</kbd></td><td>Open all folds / close all folds</td></tr>
+<tr><td class="key"><kbd>zj</kbd> / <kbd>zk</kbd></td><td>Move to next / previous fold</td></tr>
+</table>
+</section>
+
+<section class="card">
+<h2>Spell-check</h2>
+<table>
+<tr><td class="key">on by default</td><td>Markdown files have spell-check enabled automatically</td></tr>
+<tr><td class="key"><kbd>]s</kbd> / <kbd>[s</kbd></td><td>Jump to next / previous misspelled word</td></tr>
+<tr><td class="key"><kbd>z=</kbd></td><td>Suggest corrections for word under cursor</td></tr>
+<tr><td class="key"><kbd>zg</kbd></td><td>Add word to dictionary</td></tr>
+<tr><td class="key"><kbd>zw</kbd></td><td>Mark word as wrong</td></tr>
+</table>
+</section>
+
+<section class="card">
+<h2>Miscellaneous</h2>
+<table>
+<tr><td class="key"><kbd>Ctrl-a</kbd> / <kbd>Ctrl-x</kbd></td><td>Increment / decrement number under cursor</td></tr>
+<tr><td class="key"><kbd>:!{cmd}</kbd></td><td>Run external shell command</td></tr>
+<tr><td class="key"><kbd>:checkhealth</kbd></td><td>Diagnose plugin/LSP/treesitter setup issues</td></tr>
+<tr><td class="key"><kbd>:Lazy</kbd></td><td>Open the plugin manager UI</td></tr>
+<tr><td class="key"><kbd>:Mason</kbd></td><td>Open the LSP server manager UI</td></tr>
+<tr><td class="key"><kbd>:help {topic}</kbd></td><td>Open built-in help for topic</td></tr>
+</table>
+</section>
+
+</div>
+
+<footer>
+  Neovim Shortcuts Reference — part of the Full-Feature Neovim Markdown Setup project.
+</footer>
+
+<script>
+function filterShortcuts() {
+  const query = document.getElementById('search').value.toLowerCase();
+  const rows = document.querySelectorAll('table tr');
+  let visibleCount = 0;
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    if (text.includes(query)) {
+      row.classList.remove('hidden');
+      visibleCount++;
+    } else {
+      row.classList.add('hidden');
+    }
+  });
+  document.querySelectorAll('section.card').forEach(card => {
+    const visibleRows = card.querySelectorAll('tr:not(.hidden)');
+    card.style.display = visibleRows.length ? '' : 'none';
+  });
+  document.getElementById('count').textContent = query ? `${visibleCount} matching shortcuts` : '';
+}
+</script>
+
+</body>
+</html>

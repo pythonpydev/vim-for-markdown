@@ -1,0 +1,182 @@
+" Basic Vim Markdown Setup
+" Source this from your ~/.vimrc with:
+"   source /home/ed/MEGA/app/vim_for_markdown/01_basic_vim/vimrc
+" or symlink it as ~/.vimrc directly.
+
+" --- Markdown ---------------------------------------------------------
+filetype plugin indent on
+syntax on
+if has('termguicolors')
+  set termguicolors
+endif
+
+augroup markdown_setup
+  autocmd!
+  autocmd FileType markdown setlocal wrap linebreak spell spelllang=en_gb
+  autocmd BufNewFile,BufRead *.md,*.markdown setlocal filetype=markdown
+augroup END
+
+" --- Spell-check --------------------------------------------------------
+" Toggle spell-check with <leader>s (leader defaults to \)
+nnoremap <leader>s :set spell!<CR>
+
+" --- Markdown syntax highlighting (light/dark) ---------------------------
+" Colors real markdown elements: headings, bold/italic, bullets, links,
+" code, blockquotes, horizontal rules. Uses Vim's actual built-in markdown
+" syntax group names (see :help ft-markdown-syntax) — a from-scratch,
+" corrected/extended version of an older colour scheme (Notepad++-style
+" light theme), plus a matching dark theme. Toggle with <leader>d.
+
+function! s:LightMarkdownTheme()
+  set background=light
+  colorscheme default
+  hi Normal       guibg=#ffffff guifg=#000000 ctermbg=White ctermfg=Black
+  hi CursorLine   guibg=#f0f0f0 ctermbg=254 cterm=NONE gui=NONE
+  hi LineNr       guifg=#808080 ctermfg=244
+  hi CursorLineNr guifg=#000000 ctermfg=Black
+  hi StatusLine   guibg=#d0d0d0 guifg=#000000 ctermbg=252 ctermfg=Black
+  hi StatusLineNC guibg=#e0e0e0 guifg=#606060 ctermbg=254 ctermfg=244
+  hi Cursor       guibg=#ff8c00 guifg=bg
+
+  " Headings: bold red, delimiter (#) slightly muted red
+  hi markdownH1 guifg=#c00000 gui=bold ctermfg=Red cterm=bold
+  hi markdownH2 guifg=#c00000 gui=bold ctermfg=Red cterm=bold
+  hi markdownH3 guifg=#c00000 gui=bold ctermfg=Red cterm=bold
+  hi markdownH4 guifg=#c00000 gui=bold ctermfg=Red cterm=bold
+  hi markdownH5 guifg=#c00000 gui=bold ctermfg=Red cterm=bold
+  hi markdownH6 guifg=#c00000 gui=bold ctermfg=Red cterm=bold
+  hi markdownHeadingDelimiter guifg=#a00000 gui=bold ctermfg=DarkRed cterm=bold
+
+  " Emphasis
+  hi markdownBold       guifg=#0000ff gui=bold ctermfg=Blue cterm=bold
+  hi markdownItalic     guifg=#7f0055 gui=italic ctermfg=Magenta cterm=italic
+  hi markdownBoldItalic guifg=#0000ff gui=bold,italic ctermfg=Blue cterm=bold,italic
+  hi markdownStrike     guifg=#808080 gui=strikethrough ctermfg=Gray cterm=strikethrough
+
+  " Lists and quotes
+  hi markdownListMarker guifg=#d2691e gui=bold ctermfg=DarkYellow cterm=bold
+  hi markdownBlockquote guifg=#008000 gui=italic ctermfg=DarkGreen cterm=italic
+  hi markdownRule        guifg=#800080 gui=bold ctermfg=Magenta cterm=bold
+
+  " Links
+  hi markdownLinkText      guifg=#0000ee gui=underline ctermfg=Blue cterm=underline
+  hi markdownUrl           guifg=#008080 ctermfg=Cyan
+  hi markdownLinkDelimiter guifg=#808080 ctermfg=Gray
+  hi markdownUrlDelimiter  guifg=#808080 ctermfg=Gray
+
+  " Inline/fenced code: dark green text on a light grey box
+  hi markdownCode          guifg=#006400 guibg=#f5f5f5 ctermfg=22 ctermbg=254
+  hi markdownCodeBlock     guifg=#006400 guibg=#f5f5f5 ctermfg=22 ctermbg=254
+  hi markdownCodeDelimiter guifg=#808080 ctermfg=Gray
+
+  let g:markdown_theme = 'light'
+endfunction
+
+function! s:DarkMarkdownTheme()
+  set background=dark
+  colorscheme default
+  hi Normal       guibg=#1e1e1e guifg=#d4d4d4 ctermbg=Black ctermfg=White
+  hi CursorLine   guibg=#2a2a2a ctermbg=235 cterm=NONE gui=NONE
+  hi LineNr       guifg=#6a6a6a ctermfg=244
+  hi CursorLineNr guifg=#d4d4d4 ctermfg=White
+  hi StatusLine   guibg=#3a3a3a guifg=#d4d4d4 ctermbg=238 ctermfg=White
+  hi StatusLineNC guibg=#2a2a2a guifg=#808080 ctermbg=235 ctermfg=244
+  hi Cursor       guibg=#ff8c00 guifg=bg
+
+  " Headings: bold light red/orange, delimiter muted
+  hi markdownH1 guifg=#ff6b6b gui=bold ctermfg=LightRed cterm=bold
+  hi markdownH2 guifg=#ff6b6b gui=bold ctermfg=LightRed cterm=bold
+  hi markdownH3 guifg=#ff6b6b gui=bold ctermfg=LightRed cterm=bold
+  hi markdownH4 guifg=#ff6b6b gui=bold ctermfg=LightRed cterm=bold
+  hi markdownH5 guifg=#ff6b6b gui=bold ctermfg=LightRed cterm=bold
+  hi markdownH6 guifg=#ff6b6b gui=bold ctermfg=LightRed cterm=bold
+  hi markdownHeadingDelimiter guifg=#b05050 gui=bold ctermfg=DarkRed cterm=bold
+
+  " Emphasis
+  hi markdownBold       guifg=#6ab0ff gui=bold ctermfg=LightBlue cterm=bold
+  hi markdownItalic     guifg=#d18fd1 gui=italic ctermfg=LightMagenta cterm=italic
+  hi markdownBoldItalic guifg=#6ab0ff gui=bold,italic ctermfg=LightBlue cterm=bold,italic
+  hi markdownStrike     guifg=#808080 gui=strikethrough ctermfg=Gray cterm=strikethrough
+
+  " Lists and quotes
+  hi markdownListMarker guifg=#e5a05a gui=bold ctermfg=Yellow cterm=bold
+  hi markdownBlockquote guifg=#6a9955 gui=italic ctermfg=Green cterm=italic
+  hi markdownRule        guifg=#c586c0 gui=bold ctermfg=LightMagenta cterm=bold
+
+  " Links
+  hi markdownLinkText      guifg=#569cd6 gui=underline ctermfg=LightBlue cterm=underline
+  hi markdownUrl           guifg=#4ec9b0 ctermfg=Cyan
+  hi markdownLinkDelimiter guifg=#808080 ctermfg=Gray
+  hi markdownUrlDelimiter  guifg=#808080 ctermfg=Gray
+
+  " Inline/fenced code: light green text on a dark grey box
+  hi markdownCode          guifg=#7ec699 guibg=#2d2d2d ctermfg=Green ctermbg=235
+  hi markdownCodeBlock     guifg=#7ec699 guibg=#2d2d2d ctermfg=Green ctermbg=235
+  hi markdownCodeDelimiter guifg=#808080 ctermfg=Gray
+
+  let g:markdown_theme = 'dark'
+endfunction
+
+function! s:ApplyCurrentTheme()
+  if get(g:, 'markdown_theme', 'light') ==# 'dark'
+    call s:DarkMarkdownTheme()
+  else
+    call s:LightMarkdownTheme()
+  endif
+endfunction
+
+function! MarkdownThemeToggle()
+  let g:markdown_theme = (get(g:, 'markdown_theme', 'light') ==# 'light') ? 'dark' : 'light'
+  call s:ApplyCurrentTheme()
+  echo 'Markdown theme: ' . g:markdown_theme
+endfunction
+command! MarkdownThemeToggle call MarkdownThemeToggle()
+nnoremap <leader>d :MarkdownThemeToggle<CR>
+
+" Vim's own markdown syntax file defines default highlight links (e.g.
+" "hi def link markdownH1 htmlH1") the moment syntax is loaded for a
+" markdown buffer. Those defaults would silently win over colours set any
+" earlier, so re-apply our theme's markdown-specific groups on the Syntax
+" event, which fires right after that file finishes loading.
+augroup markdown_theme
+  autocmd!
+  autocmd Syntax markdown call s:ApplyCurrentTheme()
+augroup END
+
+call s:LightMarkdownTheme()
+
+" --- Preview to browser -------------------------------------------------
+" Renders the current markdown file to HTML (via pandoc) and opens it
+" in the default browser. Mapped to <leader>p in normal mode.
+function! MarkdownPreview()
+  if &filetype != 'markdown'
+    echo "Not a markdown file"
+    return
+  endif
+  let l:src = expand('%:p')
+  let l:out = expand('%:p:r') . '_preview.html'
+  call system('pandoc ' . shellescape(l:src) . ' -s -o ' . shellescape(l:out))
+  call system('xdg-open ' . shellescape(l:out) . ' &')
+endfunction
+command! MarkdownPreview call MarkdownPreview()
+nnoremap <leader>p :MarkdownPreview<CR>
+
+" --- Export to PDF --------------------------------------------------------
+" Exports the current markdown file to PDF (via pandoc + wkhtmltopdf).
+" Mapped to <leader>e in normal mode.
+function! MarkdownExportPdf()
+  if &filetype != 'markdown'
+    echo "Not a markdown file"
+    return
+  endif
+  let l:src = expand('%:p')
+  let l:out = expand('%:p:r') . '.pdf'
+  let l:result = system('pandoc ' . shellescape(l:src) . ' --pdf-engine=wkhtmltopdf -o ' . shellescape(l:out))
+  if v:shell_error != 0
+    echo "PDF export failed: " . l:result
+  else
+    echo "Exported to " . l:out
+  endif
+endfunction
+command! MarkdownExportPdf call MarkdownExportPdf()
+nnoremap <leader>e :MarkdownExportPdf<CR>

@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Vim Shortcuts Reference</title>
+<style>
+  :root {
+    --bg: #1e1e2e;
+    --fg: #cdd6f4;
+    --accent: #89b4fa;
+    --card: #292c3c;
+    --key: #313244;
+    --border: #45475a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 2rem;
+    line-height: 1.5;
+  }
+  h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0.25rem;
+  }
+  .subtitle {
+    color: #a6adc8;
+    margin-bottom: 1.5rem;
+  }
+  .search-box {
+    width: 100%;
+    max-width: 400px;
+    padding: 0.6rem 0.9rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--fg);
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.25rem;
+  }
+  section.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+  }
+  section.card h2 {
+    font-size: 1.1rem;
+    margin-top: 0;
+    color: var(--accent);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.4rem;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+  }
+  tr.hidden { display: none; }
+  td {
+    padding: 0.3rem 0.2rem;
+    vertical-align: top;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  td.key {
+    white-space: nowrap;
+    width: 1%;
+  }
+  kbd {
+    background: var(--key);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+    font-family: "SF Mono", Consolas, Monaco, monospace;
+    font-size: 0.85rem;
+    color: #f9e2af;
+  }
+  footer {
+    margin-top: 2.5rem;
+    color: #6c7086;
+    font-size: 0.85rem;
+  }
+  .count {
+    color: #6c7086;
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+  }
+  section.setup {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+  }
+  section.setup h2 {
+    margin-top: 0;
+    color: var(--accent);
+  }
+  section.setup h3 {
+    color: var(--fg);
+    margin-bottom: 0.4rem;
+  }
+  section.setup ol, section.setup ul {
+    margin-top: 0.3rem;
+    padding-left: 1.4rem;
+  }
+  section.setup li {
+    margin-bottom: 0.4rem;
+  }
+  pre {
+    background: var(--key);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.7rem 0.9rem;
+    overflow-x: auto;
+    font-family: "SF Mono", Consolas, Monaco, monospace;
+    font-size: 0.85rem;
+  }
+  .platform-cols {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+</style>
+</head>
+<body>
+
+<h1>Vim Shortcuts Reference</h1>
+<div class="subtitle">Full command reference for the basic Vim markdown setup</div>
+
+<section class="setup">
+<h2>Setup Instructions</h2>
+
+<div class="platform-cols">
+
+<div>
+<h3>Linux</h3>
+<ol>
+<li>Install Vim, Pandoc, and a PDF engine:
+<pre>sudo apt install vim pandoc wkhtmltopdf</pre>
+(Debian/Ubuntu; use your distro's package manager equivalent otherwise, e.g. <kbd>dnf</kbd>, <kbd>pacman</kbd>.)
+</li>
+<li>Run the bundled setup script from inside this folder — it checks the dependencies above and symlinks <kbd>vimrc</kbd> to <kbd>~/.vimrc</kbd> (backing up any existing one first, with confirmation):
+<pre>./setup.sh</pre>
+Or do it by hand instead:
+<pre>ln -s /home/ed/MEGA/app/vim_for_markdown/01_basic_vim/vimrc ~/.vimrc</pre>
+Or, if you already have a <kbd>~/.vimrc</kbd> and don't want to replace it, add this line to the end of it instead:
+<pre>source /home/ed/MEGA/app/vim_for_markdown/01_basic_vim/vimrc</pre>
+</li>
+<li>Open a markdown file to confirm it works:
+<pre>vim notes.md</pre>
+Spell-check and markdown highlighting should be active automatically. Try <kbd>&lt;leader&gt;p</kbd> to preview in browser and <kbd>&lt;leader&gt;e</kbd> to export to PDF (default leader is <kbd>\</kbd>).
+</li>
+</ol>
+</div>
+
+<div>
+<h3>Windows</h3>
+<ol>
+<li>Install Vim — download the installer from
+<a href="https://www.vim.org/download.php" style="color:var(--accent)">vim.org</a>,
+or via a package manager:
+<pre>winget install vim.vim</pre>
+</li>
+<li>Install Pandoc and a PDF engine:
+<pre>winget install --id JohnMacFarlane.Pandoc
+winget install --id wkhtmltopdf.wkhtmltopdf</pre>
+Ensure both are added to your <kbd>PATH</kbd> (the installers usually do this automatically; if <kbd>pandoc --version</kbd> in a new terminal fails, add their install folders to PATH manually).
+</li>
+<li>Find/create your Vim config file. On Windows this is usually:
+<pre>$HOME\_vimrc</pre>
+(often <kbd>C:\Users\&lt;you&gt;\_vimrc</kbd>). Add this line to it, pointing at wherever you've placed this project's <kbd>vimrc</kbd> file (adjust the path, using forward slashes even on Windows):
+<pre>source C:/path/to/vim_for_markdown/01_basic_vim/vimrc</pre>
+</li>
+<li>Open a markdown file to confirm it works:
+<pre>vim notes.md</pre>
+The preview/export commands use <kbd>xdg-open</kbd> to launch the browser, which is Linux-specific — see the note below for the one line to change on Windows.
+</li>
+</ol>
+<p style="font-size:0.85rem;color:#a6adc8;">
+<strong>Note:</strong> the bundled <kbd>vimrc</kbd> opens previews with <kbd>xdg-open</kbd> (Linux). On Windows, edit the <kbd>MarkdownPreview()</kbd> function in <kbd>vimrc</kbd> and replace <kbd>xdg-open</kbd> with <kbd>start</kbd> (or <kbd>cmd /c start</kbd>) so it opens in your default browser.
+</p>
+</div>
+
+</div>
+</section>
+
+<section class="setup">
+<h2>What This Setup Gives You</h2>
+<p style="color:#a6adc8;margin-top:0;">
+Once <kbd>vimrc</kbd> is loaded, opening any <kbd>.md</kbd> / <kbd>.markdown</kbd> file in Vim automatically enables the following — no extra commands needed:
+</p>
+<ul>
+<li><strong>Markdown syntax highlighting</strong> — headings, bold/italic/strikethrough, list markers, blockquotes, horizontal rules, links, and code are all explicitly coloured (not just left at Vim's uncoloured defaults), in matching light and dark themes. Toggle between them with <kbd>&lt;leader&gt;d</kbd>. Open <kbd>example_template.md</kbd> in this folder to see every element styled at once.</li>
+<li><strong>Word wrap tuned for prose</strong> — <kbd>wrap</kbd> and <kbd>linebreak</kbd> are set for markdown files so long lines wrap at word boundaries instead of mid-word, matching how prose is usually edited (unlike Vim's code-editing defaults).</li>
+<li><strong>Spell-check on by default</strong> — misspelled words are underlined as you type (British English dictionary by default; change <kbd>spelllang</kbd> in <kbd>vimrc</kbd> for another variant). Use <kbd>]s</kbd> / <kbd>[s</kbd> to jump between misspelled words and <kbd>z=</kbd> for suggestions. Toggle it off entirely with <kbd>&lt;leader&gt;s</kbd> if it gets in the way.</li>
+<li><strong>One-key browser preview</strong> — <kbd>&lt;leader&gt;p</kbd> renders the current file to HTML (via Pandoc) and opens it in your default browser, so you can see headings, tables, code blocks etc. rendered properly rather than as raw markdown syntax. Re-run it any time to refresh after edits.</li>
+<li><strong>One-key PDF export</strong> — <kbd>&lt;leader&gt;e</kbd> converts the current file straight to a shareable PDF (via Pandoc + wkhtmltopdf), written alongside the source file.</li>
+<li><strong>All of standard Vim</strong> — since this is plain Vim with a small config layered on top (not a distribution or heavy plugin stack), every normal Vim shortcut below still works exactly as usual, in any file type.</li>
+</ul>
+<p style="font-size:0.85rem;color:#a6adc8;">
+This is the deliberately minimal setup. For extras like live-reloading preview, table auto-formatting, a table of contents, link checking, autocomplete, or git integration, see the companion full-feature Neovim setup instead.
+</p>
+</section>
+
+<input type="text" class="search-box" id="search" placeholder="Filter shortcuts... (e.g. 'delete', 'dd', 'window')" oninput="filterShortcuts()">
+<div class="count" id="count"></div>
+
+<div class="grid" id="grid">
+
+<section class="card">
+<h2>Modes</h2>
+<table>
+<tr><td class="key"><kbd>i</kbd></td><td>Insert before cursor</td></tr>
+<tr><td class="key"><kbd>I</kbd></td><td>Insert at start of line</td></tr>
+<tr><td class="key"><kbd>a</kbd></td><td>Insert after cursor (append)</td></tr>
+<tr><td class="key"><kbd>A</kbd></td><td>Insert at end of line</td></tr>
+<tr><td class="key"><kbd>o</kbd></td><td>Open new line below and insert</td></tr>
+<tr><td class="key"><kbd>O</kbd></td><td>Open new line above and insert</td></tr>
+<tr><td class="key"><kbd>Esc</kbd></td><td>Return to Normal mode</td></tr>
+<tr><td class="key"><kbd>v</kbd></td><td>Visual mode (character-wise)</td></tr>
+<tr><td class="key"><kbd>V</kbd></td><td>Visual line mode</td></tr>
+<tr><td class="key"><kbd>Ctrl-v</kbd></td><td>Visual block mode</td></tr>
+<tr><td class="key"><kbd>R</kbd></td><td>Replace mode</td></tr>
+<tr><td class="key"><kbd>gi</kbd></td><td>Insert at last insert position</td></tr>
+<tr><td class="key"><kbd>:</kbd></td><td>Command-line mode</td></tr>
+</table>
+</section>
+
+<section class="card">
+<h2>Cursor Movement (basic)</h2>
+<table>
+<tr><td class="key"><kbd>h j k l</kbd></td><td>Left, down, up, right</td></tr>
+<tr><td class="key"><kbd>w</kbd></td><td>Next word start</td></tr>
+<tr><td class="key"><kbd>W</kbd></td><td>Next WORD start (whitespace-separated)</td></tr>
+<tr><td class="key"><kbd>e</kbd></td><td>End of word</td></tr>
+<tr><td class="key"><kbd>E</kbd></td><td>End of WORD</td></tr>
+<tr><td class="key"><kbd>b</kbd></td><td>Back to word start</td></tr>
+<tr><td class="key"><kbd>B</kbd></td><td>Back to WORD start</td></tr>
+<tr><td class="key"><kbd>ge</kbd></td><td>Back to end of previous word</td></tr>
+<tr><td class="key"><kbd>0</kbd></td><td>Start of line</td></tr>
+<tr><td class="key"><kbd>^</kbd></td><td>First non-blank character of line</td></tr>
+<tr><td class="key"><kbd>$</kbd></td><td>End of line</td></tr>
+<tr><td class="key"><kbd>g_</kbd></td><td>Last non-blank character of line</td></tr>
+<tr><td class="key"><kbd>f{char}</kbd></td><td>Jump to next occurrence of char</td></tr>
+<tr><td class="key"><kbd>F{char}</kbd></td><td>Jump to previous occurrence of char</td></tr>
+<tr><td class="key"><kbd>t{char}</kbd></td><td>Jump till before next occurrence of char</td></tr>
+<tr><td class="key"><kbd>T{char}</kbd></td><td>Jump till after previous occurrence of char</td></tr>
+<tr><td class="key"><kbd>;</kbd></td><td>Repeat last f/t/F/T</td></tr>
+<tr><td class="key"><kbd>,</kbd></td><td>Repeat last f/t/F/T in opposite direction</td></tr>
+</table>
+</section>
+
+<section class="card">
+<h2>Cursor Movement (lines & screen)</h2>
+<table>
+<tr><td class="key"><kbd>gg</kbd></td><td>Go to first line of file</td></tr>
+<tr><td class="key"><kbd>G</kbd></td><td>Go to last line of file</td></tr>
+<tr><td class="key"><kbd>{n}G</kbd></td><td>Go to line n</td></tr>
+<tr><td class="key"><kbd>{n}%</kbd></td><td>Go to n% through file</td></tr>
+<tr><td class="key"><kbd>H</kbd></td><td>Top of screen</td></tr>
+<tr><td class="key"><kbd>M</kbd></td><td>Middle of screen</td></tr>
+<tr><td class="key"><kbd>L</kbd></td><td>Bottom of screen</td></tr>
+<tr><td class="key"><kbd>Ctrl-d</kbd></td><td>Scroll half page down</td></tr>
+<tr><td class="key"><kbd>Ctrl-u</kbd></td><td>Scroll half page up</td></tr>
+<tr><td class="key"><kbd>Ctrl-f</kbd></td><td>Scroll full page down</td></tr>
+<tr><td class="key"><kbd>Ctrl-b</kbd></td><td>Scroll full page up</td></tr>
+<tr><td class="key"><kbd>Ctrl-e</kbd></td><td>Scroll down one line</td></tr>
+<tr><td class="key"><kbd>Ctrl-y</kbd></td><td>Scroll up one line</td></tr>
+<tr><td class="key"><kbd>zz</kbd></td><td>Center current line on screen</td></tr>
+<tr><td class="key"><kbd>zt</kbd></td><td>Current line to top of screen</td></tr>
+<tr><td class="key"><kbd>zb</kbd></td><td>Current line to bottom of screen</td></tr>
+<tr><td class="key"><kbd>{</kbd></td><td>Previous paragraph/blank line</td></tr>
+<tr><td class="key"><kbd>}</kbd></td><td>Next paragraph/blank line</td></tr>
+<tr><td class="key"><kbd>(</kbd></td><td>Previous sentence</td></tr>
+<tr><td class="key"><kbd>)</kbd></td><td>Next sentence</td></tr>
+<tr><td class="key"><kbd>%</kbd></td><td>Jump to matching bracket/paren</td></tr>
+<tr><td class="key"><kbd>Ctrl-o</kbd></td><td>Jump to older cursor position</td></tr>
+<tr><td class="key"><kbd>Ctrl-i</kbd></td><td>Jump to newer cursor position</td></tr>
+<tr><td class="key"><kbd>``</kbd></td><td>Jump to position before last jump</td></tr>
+</table>
+</section>
+
+<section class="card">
+<h2>Editing / Deleting</h2>
+<table>
+<tr><td class="key"><kbd>x</kbd></td><td>Delete character under cursor</td></tr>
+<tr><td class="key"><kbd>X</kbd></td><td>Delete character before cursor</td></tr>
+<tr><td class="key"><kbd>dd</kbd></td><td>Delete (cut) current line</td></tr>
+<tr><td class="key"><kbd>{n}dd</kbd></td><td>Delete n lines</td></tr>
+<tr><td class="key"><kbd>dw</kbd></td><td>Delete to next word start</td></tr>
+<tr><td class="key"><kbd>de</kbd></td><td>Delete to end of word</td></tr>
+<tr><td class="key"><kbd>d$</kbd> / <kbd>D</kbd></td><td>Delete to end of line</td></tr>
+<tr><td class="key"><kbd>d0</kbd></td><td>Delete to start of line</td></tr>
+<tr><td class="key"><kbd>dgg</kbd></td><td>Delete to start of file</td></tr>
+<tr><td class="key"><kbd>dG</kbd></td><td>Delete to end of file</td></tr>
+<tr><td class="key"><kbd>d{motion}</kbd></td><td>Delete over any motion (generic)</td></tr>
+<tr><td class="key"><kbd>cc</kbd> / <kbd>S</kbd></td><td>Change (delete + insert) whole line</td></tr>
+<tr><td class="key"><kbd>cw</kbd></td><td>Change to next word start</td></tr>
+<tr><td class="key"><kbd>C</kbd></td><td>Change to end of line</td></tr>
+<tr><td class="key"><kbd>c{motion}</kbd></td><td>Change over any motion (generic)</td></tr>
+<tr><td class="key"><kbd>r{char}</kbd></td><td>Replace single character</td></tr>
+<tr><td class="key"><kbd>R</kbd></td><td>Enter Replace mode</td></tr>
+<tr><td class="key"><kbd>s</kbd></td><td>Delete character and insert</td></tr>
+<tr><td class="key"><kbd>~</kbd></td><td>Toggle case of character under cursor</td></tr>
+<tr><td class="key"><kbd>g~{motion}</kbd></td><td>Toggle case over motion</td></tr>
+<tr><td class="key"><kbd>gu{motion}</kbd></td><td>Lowercase over motion</td></tr>
+<tr><td class="key"><kbd>gU{motion}</kbd></td><td>Uppercase over motion</td></tr>
+<tr><td class="key"><kbd>J</kbd></td><td>Join line below with current line</td></tr>
+<tr><td class="key"><kbd>gJ</kbd></td><td>Join lines without adding space</td></tr>
+<tr><td class="key"><kbd>u</kbd></td><td>Undo</td></tr>
+<tr><td class="key"><kbd>Ctrl-r</kbd></td><td>Redo</td></tr>
+<tr><td class="key"><kbd>.</kbd></td><td>Repeat last change</td></tr>
+</table>
+</section>
+
+<section class="card">
+<h2>Copy / Paste (Yank)</h2>
+<table>
+<tr><td class="key"><kbd>yy</kbd> / <kbd>Y</kbd></td><td>Yank (copy) current line</td></tr>
+<tr><td class="key"><kbd>{n}yy</kbd></td><td>Yank n lines</td></tr>
+<tr><td class="key"><kbd>yw</kbd></td><td>Yank word</td></tr>
+<tr><td class="key"><kbd>y$</kbd></td><td>Yank to end of line</td></tr>
+<tr><td class="key"><kbd>y{motion}</kbd></td><td>Yank over any motion (generic)</td></tr>
+<tr><td class="key"><kbd>p</kbd></td><td>Paste after cursor / below line</td></tr>
+<tr><td class="key"><kbd>P</kbd></td><td>Paste before cursor / above line</td></tr>
+<tr><td class="key"><kbd>gp</kbd></td><td>Paste after, cursor moves after new text</td></tr>
+<tr><td class="key"><kbd>]p</kbd></td><td>Paste with indent adjusted</td></tr>
+<tr><td class="key"><kbd>"{reg}y</kbd></td><td>Yank into named register</td></tr>
+<tr><td class="key"><kbd>"{reg}p</kbd></td><td>Paste from named register</td></tr>
+<tr><td class="key"><kbd>"0p</kbd></td><td>Paste from yank register (unaffected by deletes)</td></tr>
+</table>
+</section>
+
+<section class="card">
+<h2>Visual Mode</h2>
+<table>
+<tr><td class="key"><kbd>v</kbd></td><td>Start character-wise visual selection</td></tr>
+<tr><td class="key"><kbd>V</kbd></td><td>Start line-wise visual selection</td></tr>
+<tr><td class="key"><kbd>Ctrl-v</kbd></td><td>Start block-wise visual selection</td></tr>
+<tr><td class="key"><kbd>o</kbd></td><td>Move to other end of selection</td></tr>
+<tr><td class="key"><kbd>gv</kbd></td><td>Reselect last visual selection</td></tr>
+<tr><td class="key"><kbd>d</kbd> / <kbd>x</kbd></td><td>Delete selection</td></tr>
+<tr><td class="key"><kbd>y</kbd></td><td>Yank selection</td></tr>
+<tr><td class="key"><kbd>c</kbd></td><td>Change selection</td></tr>
+<tr><td class="key"><kbd>></kbd></td><td>Indent selection</td></tr>
+<tr><td class="key"><kbd>&lt;</kbd></td><td>Un-indent selection</td></tr>
+<tr><td class="key"><kbd>=</kbd></td><td>Auto-indent selection</td></tr>
+<tr><td class="key"><kbd>U</kbd></td><td>Uppercase selection</td></tr>
+<tr><td class="key"><kbd>u</kbd></td><td>Lowercase selection</td></tr>
+<tr><td class="key"><kbd>J</kbd></td><td>Join selected lines</td></tr>
+<tr><td class="key"><kbd>I</kbd> (block mode)</td><td>Insert before block on all lines</td></tr>
+<tr><td class="key"><kbd>A</kbd> (block mode)</td><td>Append after block on all lines</td></tr>
+</table>
+</section>
+
+<section class="card">
+<h2>Search & Replace</h2>
+<table>
+<tr><td class="key"><kbd>/pattern</kbd></td><td>Search forward</td></tr>
+<tr><td class="key"><kbd>?pattern</kbd></td><td>Search backward</td></tr>
+<tr><td class="key"><kbd>n</kbd></td><td>Repeat search, same direction</td></tr>
+<tr><td class="key"><kbd>N</kbd></td><td>Repeat search, opposite direction</td></tr>
+<tr><td class="key"><kbd>*</kbd></td><td>Search forward for word under cursor</td></tr>
+<tr><td class="key"><kbd>#</kbd></td><td>Search backward for word under cursor</td></tr>
+<tr><td class="key"><kbd>:noh</kbd></td><td>Clear search highlighting</td></tr>
+<tr><td class="key"><kbd>:%s/old/new/g</kbd></td><td>Replace all occurrences in file</td></tr>
+<tr><td class="key"><kbd>:%s/old/new/gc</kbd></td><td>Replace all, with confirmation</td></tr>
+<tr><td class="key"><kbd>:s/old/new/g</kbd></td><td>Replace all occurrences in current line</td></tr>
+<tr><td class="key"><kbd>:'&lt;,'&gt;s/old/new/g</kbd></td><td>Replace within visual selection</td></tr>
+</table>
+</section>
+
+<section class="card">
+<h2>Files & Buffers</h2>
+<table>
+<tr><td class="key"><kbd>:w</kbd></td><td>Write (save) file</td></tr>
+<tr><td class="key"><kbd>:w {file}</kbd></td><td>Save as</td></tr>
+<tr><td class="key"><kbd>:q</kbd></td><td>Quit</td></tr>
+<tr><td class="key"><kbd>:q!</kbd></td><td>Quit without saving</td></tr>
+<tr><td class="key"><kbd>:wq</kbd> / <kbd>ZZ</kbd></td><td>Save and quit</td></tr>
+<tr><td class="key"><kbd>ZQ</kbd></td><td>Quit without saving (like :q!)</td></tr>
+<tr><td class="key"><kbd>:e {file}</kbd></td><td>Edit (open) a file</td></tr>
+<tr><td class="key"><kbd>:e!</kbd></td><td>Reload file, discarding changes</td></tr>
+<tr><td class="key"><kbd>:bn</kbd></td><td>Next buffer</td></tr>
+<tr><td class="key"><kbd>:bp</kbd></td><td>Previous buffer</td></tr>
+<tr><td class="key"><kbd>:bd</kbd></td><td>Delete (close) buffer</td></tr>
+<tr><td class="key"><kbd>:ls</kbd> / <kbd>:buffers</kbd></td><td>List open buffers</td></tr>
+<tr><td class="key"><kbd>:b {n}</kbd></td><td>Switch to buffer n</td></tr>
+<tr><td class="key"><kbd>Ctrl-^</kbd></td><td>Switch to alternate (last) buffer</td></tr>
+</table>
+</section>
+
+<section class="card">
+<h2>Windows &amp; Tabs</h2>
+<table>
+<tr><td class="key"><kbd>:split</kbd> / <kbd>Ctrl-w s</kbd></td><td>Horizontal split</td></tr>
+<tr><td class="key"><kbd>:vsplit</kbd> / <kbd>Ctrl-w v</kbd></td><td>Vertical split</td></tr>
+<tr><td class="key"><kbd>Ctrl-w w</kbd></td><td>Cycle to next window</td></tr>
+<tr><td class="key"><kbd>Ctrl-w h/j/k/l</kbd></td><td>Move to window left/down/up/right</td></tr>
+<tr><td class="key"><kbd>Ctrl-w q</kbd></td><td>Close current window</td></tr>
+<tr><td class="key"><kbd>Ctrl-w o</kbd></td><td>Close all other windows</td></tr>
+<tr><td class="key"><kbd>Ctrl-w =</kbd></td><td>Equalize window sizes</td></tr>
+<tr><td class="key"><kbd>Ctrl-w {+/-}</kbd></td><td>Increase/decrease window height</td></tr>
+<tr><td class="key"><kbd>:tabnew</kbd></td><td>Open new tab</td></tr>
+<tr><td class="key"><kbd>gt</kbd></td><td>Next tab</td></tr>
+<tr><td class="key"><kbd>gT</kbd></td><td>Previous tab</td></tr>
+<tr><td class="key"><kbd>{n}gt</kbd></td><td>Go to tab n</td></tr>
+<tr><td class="key"><kbd>:tabclose</kbd></td><td>Close current tab</td></tr>
+</table>
+</section>
+
+<section class="card">
+<h2>Marks &amp; Registers</h2>
+<table>
+<tr><td class="key"><kbd>m{a-z}</kbd></td><td>Set mark at cursor position</td></tr>
+<tr><td class="key"><kbd>'{a-z}</kbd></td><td>Jump to line of mark</td></tr>
+<tr><td class="key"><kbd>`{a-z}</kbd></td><td>Jump to exact position of mark</td></tr>
+<tr><td class="key"><kbd>''</kbd></td><td>Jump back to line before last jump</td></tr>
+<tr><td class="key"><kbd>:marks</kbd></td><td>List all marks</td></tr>
+<tr><td class="key"><kbd>:reg</kbd></td><td>List all registers</td></tr>
+<tr><td class="key"><kbd>qa</kbd></td><td>Start recording macro into register a</td></tr>
+<tr><td class="key"><kbd>q</kbd></td><td>Stop recording macro</td></tr>
+<tr><td class="key"><kbd>@a</kbd></td><td>Play macro from register a</td></tr>
+<tr><td class="key"><kbd>@@</kbd></td><td>Repeat last played macro</td></tr>
+<tr><td class="key"><kbd>{n}@a</kbd></td><td>Play macro n times</td></tr>
+</table>
+</section>
+
+<section class="card">
+<h2>Text Objects (used with d/c/y/v)</h2>
+<table>
+<tr><td class="key"><kbd>iw</kbd></td><td>Inner word</td></tr>
+<tr><td class="key"><kbd>aw</kbd></td><td>A word (incl. trailing space)</td></tr>
+<tr><td class="key"><kbd>is</kbd></td><td>Inner sentence</td></tr>
+<tr><td class="key"><kbd>as</kbd></td><td>A sentence</td></tr>
+<tr><td class="key"><kbd>ip</kbd></td><td>Inner paragraph</td></tr>
+<tr><td class="key"><kbd>ap</kbd></td><td>A paragraph</td></tr>
+<tr><td class="key"><kbd>i"</kbd> / <kbd>i'</kbd></td><td>Inner quoted string</td></tr>
+<tr><td class="key"><kbd>a"</kbd> / <kbd>a'</kbd></td><td>A quoted string (incl. quotes)</td></tr>
+<tr><td class="key"><kbd>i(</kbd> / <kbd>ib</kbd></td><td>Inner parentheses</td></tr>
+<tr><td class="key"><kbd>a(</kbd> / <kbd>ab</kbd></td><td>A parentheses block</td></tr>
+<tr><td class="key"><kbd>i{</kbd> / <kbd>iB</kbd></td><td>Inner braces</td></tr>
+<tr><td class="key"><kbd>a{</kbd> / <kbd>aB</kbd></td><td>A braces block</td></tr>
+<tr><td class="key"><kbd>i[</kbd></td><td>Inner brackets</td></tr>
+<tr><td class="key"><kbd>a[</kbd></td><td>A brackets block</td></tr>
+<tr><td class="key"><kbd>it</kbd></td><td>Inner tag (e.g. HTML)</td></tr>
+<tr><td class="key"><kbd>at</kbd></td><td>A tag block</td></tr>
+<tr>
+<td colspan="2" style="font-size:0.85rem;color:#a6adc8;padding-top:0.5rem;">
+Example: <kbd>di"</kbd> deletes inside quotes, <kbd>ca(</kbd> changes a parenthesised block including parens.
+</td>
+</tr>
+</table>
+</section>
+
+<section class="card">
+<h2>Indentation</h2>
+<table>
+<tr><td class="key"><kbd>>></kbd></td><td>Indent current line</td></tr>
+<tr><td class="key"><kbd><<</kbd></td><td>Un-indent current line</td></tr>
+<tr><td class="key"><kbd>={motion}</kbd></td><td>Auto-indent over motion</td></tr>
+<tr><td class="key"><kbd>gg=G</kbd></td><td>Auto-indent entire file</td></tr>
+<tr><td class="key"><kbd>Ctrl-t</kbd> (insert mode)</td><td>Indent current line</td></tr>
+<tr><td class="key"><kbd>Ctrl-d</kbd> (insert mode)</td><td>Un-indent current line</td></tr>
+</table>
+</section>
+
+<section class="card">
+<h2>Folding</h2>
+<table>
+<tr><td class="key"><kbd>zf{motion}</kbd></td><td>Create fold over motion</td></tr>
+<tr><td class="key"><kbd>zo</kbd></td><td>Open fold</td></tr>
+<tr><td class="key"><kbd>zc</kbd></td><td>Close fold</td></tr>
+<tr><td class="key"><kbd>za</kbd></td><td>Toggle fold</td></tr>
+<tr><td class="key"><kbd>zR</kbd></td><td>Open all folds</td></tr>
+<tr><td class="key"><kbd>zM</kbd></td><td>Close all folds</td></tr>
+<tr><td class="key"><kbd>zd</kbd></td><td>Delete fold under cursor</td></tr>
+<tr><td class="key"><kbd>zj</kbd></td><td>Move to next fold</td></tr>
+<tr><td class="key"><kbd>zk</kbd></td><td>Move to previous fold</td></tr>
+</table>
+</section>
+
+<section class="card">
+<h2>Spell-check</h2>
+<table>
+<tr><td class="key"><kbd>:set spell</kbd></td><td>Enable spell-checking</td></tr>
+<tr><td class="key"><kbd>:set nospell</kbd></td><td>Disable spell-checking</td></tr>
+<tr><td class="key"><kbd>]s</kbd></td><td>Jump to next misspelled word</td></tr>
+<tr><td class="key"><kbd>[s</kbd></td><td>Jump to previous misspelled word</td></tr>
+<tr><td class="key"><kbd>z=</kbd></td><td>Suggest corrections for word under cursor</td></tr>
+<tr><td class="key"><kbd>zg</kbd></td><td>Add word to spell-check dictionary (good word)</td></tr>
+<tr><td class="key"><kbd>zw</kbd></td><td>Mark word as wrong (bad word)</td></tr>
+<tr><td class="key"><kbd>zug</kbd></td><td>Undo adding word to dictionary</td></tr>
+</table>
+</section>
+
+<section class="card">
+<h2>This Setup's Custom Shortcuts</h2>
+<table>
+<tr><td class="key"><kbd>&lt;leader&gt;s</kbd></td><td>Toggle spell-check on/off (leader = <kbd>\</kbd> by default)</td></tr>
+<tr><td class="key"><kbd>&lt;leader&gt;d</kbd></td><td>Toggle light/dark colour theme</td></tr>
+<tr><td class="key"><kbd>&lt;leader&gt;p</kbd></td><td>Preview current markdown file in browser (via pandoc)</td></tr>
+<tr><td class="key"><kbd>&lt;leader&gt;e</kbd></td><td>Export current markdown file to PDF (via pandoc + wkhtmltopdf)</td></tr>
+<tr><td class="key"><kbd>:MarkdownPreview</kbd></td><td>Same as &lt;leader&gt;p, callable directly</td></tr>
+<tr><td class="key"><kbd>:MarkdownExportPdf</kbd></td><td>Same as &lt;leader&gt;e, callable directly</td></tr>
+</table>
+</section>
+
+<section class="card">
+<h2>Miscellaneous</h2>
+<table>
+<tr><td class="key"><kbd>Ctrl-a</kbd></td><td>Increment number under/after cursor</td></tr>
+<tr><td class="key"><kbd>Ctrl-x</kbd></td><td>Decrement number under/after cursor</td></tr>
+<tr><td class="key"><kbd>:!{cmd}</kbd></td><td>Run external shell command</td></tr>
+<tr><td class="key"><kbd>:r !{cmd}</kbd></td><td>Insert output of shell command into buffer</td></tr>
+<tr><td class="key"><kbd>Ctrl-g</kbd></td><td>Show file name and cursor position</td></tr>
+<tr><td class="key"><kbd>:set nu</kbd></td><td>Show line numbers</td></tr>
+<tr><td class="key"><kbd>:set rnu</kbd></td><td>Show relative line numbers</td></tr>
+<tr><td class="key"><kbd>K</kbd></td><td>Look up keyword under cursor (man page/help)</td></tr>
+<tr><td class="key"><kbd>:help {topic}</kbd></td><td>Open built-in help for topic</td></tr>
+</table>
+</section>
+
+</div>
+
+<footer>
+  Vim Shortcuts Reference — part of the Basic Vim Markdown Setup project.
+</footer>
+
+<script>
+function filterShortcuts() {
+  const query = document.getElementById('search').value.toLowerCase();
+  const rows = document.querySelectorAll('table tr');
+  let visibleCount = 0;
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    if (text.includes(query)) {
+      row.classList.remove('hidden');
+      visibleCount++;
+    } else {
+      row.classList.add('hidden');
+    }
+  });
+  // hide cards with no visible rows
+  document.querySelectorAll('section.card').forEach(card => {
+    const visibleRows = card.querySelectorAll('tr:not(.hidden)');
+    card.style.display = visibleRows.length ? '' : 'none';
+  });
+  document.getElementById('count').textContent = query ? `${visibleCount} matching shortcuts` : '';
+}
+</script>
+
+</body>
+</html>
