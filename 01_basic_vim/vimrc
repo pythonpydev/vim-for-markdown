@@ -286,7 +286,7 @@ function! MarkdownPreview()
   endif
   let l:src = expand('%:p')
   let l:out = '/tmp/' . expand('%:t:r') . '_preview.html'
-  let l:result = system('pandoc ' . shellescape(l:src) . ' -s -o ' . shellescape(l:out))
+  let l:result = system('pandoc -f markdown-yaml_metadata_block ' . shellescape(l:src) . ' -s -o ' . shellescape(l:out))
   if v:shell_error != 0
     echo "Preview failed: " . l:result
     return
@@ -306,7 +306,7 @@ function! MarkdownExportPdf()
   endif
   let l:src = expand('%:p')
   let l:out = expand('%:p:r') . '.pdf'
-  let l:result = system('pandoc ' . shellescape(l:src) . ' --pdf-engine=wkhtmltopdf -o ' . shellescape(l:out))
+  let l:result = system('pandoc -f markdown-yaml_metadata_block ' . shellescape(l:src) . ' --pdf-engine=wkhtmltopdf -o ' . shellescape(l:out))
   if v:shell_error != 0
     echo "PDF export failed: " . l:result
   else
