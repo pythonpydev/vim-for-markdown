@@ -101,7 +101,7 @@ function! s:LightMarkdownTheme()
   hi Normal       guibg=#ffffff guifg=#000000 ctermbg=White ctermfg=Black
   hi CursorLine   guibg=#f0f0f0 ctermbg=254 cterm=NONE gui=NONE
   hi LineNr       guifg=#808080 ctermfg=244
-  hi CursorLineNr guifg=#000000 ctermfg=Black
+  hi CursorLineNr guibg=#32cd32 guifg=#ff0000 gui=bold ctermbg=Green ctermfg=Red cterm=bold
   hi StatusLine   guibg=#d0d0d0 guifg=#000000 ctermbg=252 ctermfg=Black
   hi StatusLineNC guibg=#e0e0e0 guifg=#606060 ctermbg=254 ctermfg=244
   hi Cursor       guibg=#ff8c00 guifg=bg
@@ -160,7 +160,7 @@ function! s:DarkMarkdownTheme()
   hi Normal       guibg=#1e1e1e guifg=#d4d4d4 ctermbg=Black ctermfg=White
   hi CursorLine   guibg=#2a2a2a ctermbg=235 cterm=NONE gui=NONE
   hi LineNr       guifg=#6a6a6a ctermfg=244
-  hi CursorLineNr guifg=#d4d4d4 ctermfg=White
+  hi CursorLineNr guibg=#32cd32 guifg=#ff0000 gui=bold ctermbg=Green ctermfg=Red cterm=bold
   hi StatusLine   guibg=#3a3a3a guifg=#d4d4d4 ctermbg=238 ctermfg=White
   hi StatusLineNC guibg=#2a2a2a guifg=#808080 ctermbg=235 ctermfg=244
   hi Cursor       guibg=#ff8c00 guifg=bg
@@ -277,9 +277,20 @@ function! MarkdownPreview()
     echo "Not a markdown file"
     return
   endif
+  if empty(expand('%:p'))
+    echo "Save the file first (:w) before previewing"
+    return
+  endif
+  if &modified
+    write
+  endif
   let l:src = expand('%:p')
   let l:out = '/tmp/' . expand('%:t:r') . '_preview.html'
-  call system('pandoc ' . shellescape(l:src) . ' -s -o ' . shellescape(l:out))
+  let l:result = system('pandoc ' . shellescape(l:src) . ' -s -o ' . shellescape(l:out))
+  if v:shell_error != 0
+    echo "Preview failed: " . l:result
+    return
+  endif
   call system('xdg-open ' . shellescape(l:out) . ' &')
 endfunction
 command! MarkdownPreview call MarkdownPreview()
