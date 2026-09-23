@@ -24,6 +24,16 @@ return {
         -- markdown-tools.lua), bright red in both themes. A single character
         -- cell is the thinnest line the terminal can draw.
         vim.api.nvim_set_hl(0, "ColorColumn", { bg = "#ff0000" })
+
+        -- Line numbers: Catppuccin's default LineNr (overlay0) reads too
+        -- faint against the dark "mocha" background, and the current line's
+        -- number isn't distinguished from the rest at all by default.
+        -- subtext0 keeps ordinary numbers legible without being loud;
+        -- CursorLineNr uses the theme's own green/base pair (bold) so the
+        -- current line's number stands out clearly in both flavours.
+        local palette = require("catppuccin.palettes").get_palette()
+        vim.api.nvim_set_hl(0, "LineNr", { fg = palette.subtext0 })
+        vim.api.nvim_set_hl(0, "CursorLineNr", { fg = palette.base, bg = palette.green, bold = true })
         local ok, lualine = pcall(require, "lualine")
         if ok then lualine.refresh() end
       end

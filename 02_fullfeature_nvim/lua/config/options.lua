@@ -7,6 +7,11 @@ local opt = vim.opt
 
 opt.number = true
 opt.relativenumber = true
+-- Highlight the current line's number distinctly (colours set per-theme in
+-- lua/plugins/ui.lua); cursorlineopt=number restricts it to the number
+-- column only, so the text line itself isn't tinted.
+opt.cursorline = true
+opt.cursorlineopt = "number"
 opt.mouse = "a"
 opt.clipboard = "unnamedplus"
 opt.ignorecase = true
