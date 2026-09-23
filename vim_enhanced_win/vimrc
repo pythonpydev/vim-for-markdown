@@ -1,10 +1,20 @@
-" Basic Vim Markdown Setup
-" Source this from your ~/.vimrc with:
-"   source /home/ed/MEGA/app/vim_for_markdown/01_basic_vim/vimrc
-" or symlink it as ~/.vimrc directly.
+" Enhanced Vim Markdown Setup — Windows port
+" Same as the Linux 03_vim_enhanced setup, plus fzf-powered fuzzy file
+" finding and a fuzzy-browse "save as", ported to run on native Windows Vim
+" (not WSL/Git-Bash Vim). See CLAUDE.md in this folder for what had to
+" change and why.
+" Source this from your Vim config with:
+"   source C:/path/to/vim_for_markdown/vim_enhanced_win/vimrc
+" (forward slashes, even on Windows) — setup.ps1 does this for you.
 
 " --- Clipboard ----------------------------------------------------------
 " Use the system clipboard for all yank/delete/paste operations by default.
+" On Windows, Vim maps both the '+' and '*' registers to the one Windows
+" clipboard (no X11 split like on Linux), so unnamedplus works the same way
+" here as long as this Vim build has +clipboard — true for the standard
+" vim.org / winget installer, which bundles gvim. Check with:
+"   vim --version | findstr clipboard
+" (you want +clipboard, not -clipboard).
 set clipboard=unnamedplus
 
 " --- Line numbers ---------------------------------------------------------
@@ -15,23 +25,34 @@ set number relativenumber
 " --- Markdown ---------------------------------------------------------
 filetype plugin indent on
 syntax on
+" has('termguicolors') only reflects compile-time support, not whether the
+" console Vim is actually attached to advertises 24-bit colour at runtime —
+" some Windows consoles/terminals don't, and `set termguicolors` throws
+" E954 there. That error would otherwise abort sourcing this entire file
+" (everything below, every keybinding included), so it's caught rather than
+" left to fail loudly. Confirmed reproducing on Windows 11 with the
+" vim.org/winget Vim 9.2 build.
 if has('termguicolors')
-  set termguicolors
+  try
+    set termguicolors
+  catch /E954/
+  endtry
 endif
 
 " Resolved directory this vimrc actually lives in. Plain expand('<sfile>:p:h')
-" would instead give the directory of ~/.vimrc *itself* when it's a symlink
-" (e.g. ~/, not this project folder) — resolve() follows the symlink first
-" so paths below land inside the synced project regardless of how vimrc was
-" loaded (verified: without resolve(), this silently pointed at $HOME).
+" would instead give the directory of the file that sourced it (e.g. $HOME)
+" if this were ever reached via a symlink — resolve() follows any symlink
+" first so paths below land inside the synced project regardless of how
+" vimrc was loaded (same reasoning as the Linux version; kept here even
+" though setup.ps1 uses a plain `source` line, not a symlink).
 let s:project_dir = fnamemodify(resolve(expand('<sfile>:p')), ':h')
 
 " Personal dictionary (zg/zw) lives inside this synced project instead of
-" the default ~/.vim/spell/en.utf-8.add, so words you add on one machine
-" show up on every other machine this vimrc is symlinked on (unlike the
-" theme state file below, which is deliberately per-machine). To go back to
-" Vim's default (local-only, not synced), delete the "spellfile=..." part
-" of the autocmd below.
+" the default spell location, so words you add on one machine show up on
+" every other machine this vimrc is sourced on (unlike the theme state file
+" below, which is deliberately per-machine). To go back to Vim's default
+" (local-only, not synced), delete the "spellfile=..." part of the autocmd
+" below.
 let s:spellfile = s:project_dir . '/spell/en.utf-8.add'
 call mkdir(fnamemodify(s:spellfile, ':h'), 'p')
 
@@ -39,7 +60,7 @@ call mkdir(fnamemodify(s:spellfile, ':h'), 'p')
 " you type past column 80 (gq/gqap reflows a paragraph that's already there,
 " e.g. pasted text); colorcolumn draws a guide line at column 81 (one past
 " the limit, so it doesn't sit on top of a character at column 80 itself),
-" coloured bright red per-theme below.
+" coloured dark red per-theme below.
 augroup markdown_setup
   autocmd!
   execute 'autocmd FileType markdown setlocal wrap linebreak spell spelllang=en_gb spellfile=' . s:spellfile . ' textwidth=80 colorcolumn=81'
@@ -49,23 +70,6 @@ augroup END
 " --- Spell-check --------------------------------------------------------
 " Toggle spell-check with <leader>s (leader defaults to \)
 nnoremap <leader>s :set spell!<CR>
-
-" --- Fix stale terminal redraw glitches -----------------------------------
-" Some terminals (seen with gnome-terminal/VTE) occasionally leave stray
-" coloured cells on screen after fast redraws (e.g. spell-check highlighting)
-" that :redraw!/Ctrl-L doesn't clear, but resizing the window does. This
-" sends the same "resize" escape sequence the window manager would (shrink
-" by one column, then straight back), forcing a full repaint without
-" actually changing your terminal's size. Mapped to <leader>r.
-function! RefreshTerminal()
-  let l:lines = &lines
-  let l:columns = &columns
-  call system('printf "\e[8;' . l:lines . ';' . (l:columns - 1) . 't" > /dev/tty')
-  sleep 100m
-  call system('printf "\e[8;' . l:lines . ';' . l:columns . 't" > /dev/tty')
-endfunction
-command! RefreshTerminal call RefreshTerminal()
-nnoremap <leader>r :RefreshTerminal<CR>
 
 " --- Reflow to 80 columns -------------------------------------------------
 " textwidth only wraps text as you actively type it; it does nothing to text
@@ -88,12 +92,82 @@ endfunction
 command! ToggleWrapLimit call ToggleWrapLimit()
 nnoremap <leader>w :call ToggleWrapLimit()<CR>
 
+" --- Fuzzy file finder + fuzzy "save as" (fzf) -----------------------------
+" fzf ships its own Vim plugin (:FZF command, fzf#run() function) right
+" alongside the CLI binary on Linux, but the Windows distributions (winget,
+" Scoop) only package the compiled fzf.exe binary release, which does NOT
+" include plugin/fzf.vim — that file only ships in the git repo itself. So
+" on Windows the reliable way to get it is a git clone to ~/.fzf (same
+" location the upstream Linux/macOS installer uses), with fzf.exe itself
+" installed separately (e.g. via winget) and left on PATH. See README/
+" setup.ps1. If it's missing, <leader>ff and <leader>sa print a message
+" instead of erroring.
+let s:fzf_dir = expand('~/.fzf')
+if filereadable(s:fzf_dir . '/plugin/fzf.vim')
+  execute 'set rtp+=' . fnameescape(s:fzf_dir)
+endif
+unlet! s:fzf_dir
+
+" Fuzzy-find and open a file ("an easy way to open files, navigate to a
+" file and open it") — mapped to <leader>ff to match the full-feature
+" Neovim setup's Telescope binding.
+function! MarkdownFuzzyFind()
+  if !exists(':FZF')
+    echo 'fzf not found — install it (see README), then restart Vim'
+    return
+  endif
+  FZF
+endfunction
+command! MarkdownFuzzyFind call MarkdownFuzzyFind()
+nnoremap <leader>ff :MarkdownFuzzyFind<CR>
+
+" Save as, but browse to the target folder with fzf instead of typing/
+" tab-completing the whole path — mirrors the full-feature Neovim setup's
+" telescope-file-browser-based <leader>sa. Browse (fuzzy-filter as you
+" type), Enter to pick a folder, then a small prompt (pre-filled with the
+" current filename) for the final name before saving.
+function! s:MarkdownSaveAsInDir(bufnr, original_name, selected)
+  let l:dir = substitute(fnamemodify(a:selected, ':p'), '[\\/]$', '', '')
+  let l:target = input('Save as: ', l:dir . '/' . a:original_name, 'file')
+  if !empty(l:target)
+    let l:winid = bufwinid(a:bufnr)
+    if l:winid != -1
+      call win_gotoid(l:winid)
+    endif
+    execute 'saveas ' . fnameescape(l:target)
+  endif
+endfunction
+
+function! MarkdownSaveAs()
+  if !exists('*fzf#run')
+    echo 'fzf not found — install it (see README), then restart Vim'
+    return
+  endif
+  let l:bufnr = bufnr('%')
+  let l:original_name = expand('%:t')
+  " Unix's `find . -type d` has no native Windows equivalent — the closest
+  " built-in cmd.exe tool is `dir /b /s /ad` (bare, recurse, directories
+  " only). It lists absolute paths rather than "./relative" ones like find
+  " does, which is fine here since the sink already resolves the selection
+  " to an absolute path with fnamemodify(..., ':p'). `echo .` is prepended
+  " so "here" (the file's own directory) is still selectable, matching the
+  " Linux version's behaviour.
+  call fzf#run(fzf#wrap({
+        \ 'source': 'dir /b /s /ad . & echo .',
+        \ 'dir': expand('%:p:h'),
+        \ 'sink': function('s:MarkdownSaveAsInDir', [l:bufnr, l:original_name]),
+        \ 'options': ['--prompt', 'Save in> '],
+        \ }))
+endfunction
+command! MarkdownSaveAs call MarkdownSaveAs()
+nnoremap <leader>sa :MarkdownSaveAs<CR>
+
 " --- Markdown syntax highlighting (light/dark) ---------------------------
 " Colors real markdown elements: headings, bold/italic, bullets, links,
 " code, blockquotes, horizontal rules. Uses Vim's actual built-in markdown
-" syntax group names (see :help ft-markdown-syntax) — a from-scratch,
-" corrected/extended version of an older colour scheme (Notepad++-style
-" light theme), plus a matching dark theme. Toggle with <leader>d.
+" syntax group names (see :help ft-markdown-syntax) — carried over unchanged
+" from the Linux version (colours aren't platform-specific). Toggle with
+" <leader>d.
 
 function! s:LightMarkdownTheme()
   set background=light
@@ -147,8 +221,8 @@ function! s:LightMarkdownTheme()
   hi SpellLocal guifg=#000000 guibg=NONE gui=undercurl guisp=#008080 ctermfg=Black ctermbg=NONE cterm=underline
 
   " Guide line at column 81 (see textwidth/colorcolumn above). A single
-  " character cell is the thinnest line the terminal can draw; darker red
-  " here makes it less visually loud than a full-brightness red.
+  " character cell is the thinnest line the terminal can draw; dark red
+  " here keeps it less visually loud than a full-brightness red.
   hi ColorColumn guibg=#8b0000 ctermbg=DarkRed
 
   let g:markdown_theme = 'light'
@@ -206,8 +280,8 @@ function! s:DarkMarkdownTheme()
   hi SpellLocal guifg=#d4d4d4 guibg=NONE gui=undercurl guisp=#4ec9b0 ctermfg=White ctermbg=NONE cterm=underline
 
   " Guide line at column 81 (see textwidth/colorcolumn above). A single
-  " character cell is the thinnest line the terminal can draw; darker red
-  " here makes it less visually loud than a full-brightness red.
+  " character cell is the thinnest line the terminal can draw; dark red
+  " here keeps it less visually loud than a full-brightness red.
   hi ColorColumn guibg=#8b0000 ctermbg=DarkRed
 
   let g:markdown_theme = 'dark'
@@ -224,10 +298,12 @@ endfunction
 " --- Theme persistence ----------------------------------------------------
 " g:markdown_theme only lives in memory for the current session by default,
 " so the light/dark choice would silently reset to light every time Vim is
-" reopened. Persist it to a small state file instead (mirrors where Vim/
-" Neovim already keep their own state, e.g. swap files under
-" ~/.local/state/) so <leader>d survives quitting and reopening Vim.
-let s:theme_state_file = expand('~/.local/state/vim_markdown_theme')
+" reopened. Persist it to a small state file instead, so <leader>d survives
+" quitting and reopening Vim. Uses %LOCALAPPDATA% — the idiomatic per-user,
+" per-machine state location on Windows (the Linux version uses
+" ~/.local/state/ for the same reason; this is deliberately per-machine,
+" unlike the spellfile above which is synced with the project).
+let s:theme_state_file = expand('$LOCALAPPDATA') . '/vim_enhanced_win/theme'
 
 function! s:LoadSavedTheme()
   if filereadable(s:theme_state_file)
@@ -270,17 +346,24 @@ call s:ApplyCurrentTheme()
 " --- Preview to browser -------------------------------------------------
 " Renders the current markdown file to HTML (via pandoc) and opens it
 " in the default browser. Mapped to <leader>p in normal mode.
-" Written to /tmp (not next to the source file) since this is a disposable
-" render, not an export the user wants to keep around in their notes.
+" Written to %TEMP% (not next to the source file) since this is a disposable
+" render, not an export the user wants to keep around in their notes — the
+" Linux version uses /tmp for the same reason; Windows has no /tmp, so this
+" uses the equivalent per-user temp directory instead.
 function! MarkdownPreview()
   if &filetype != 'markdown'
     echo "Not a markdown file"
     return
   endif
   let l:src = expand('%:p')
-  let l:out = '/tmp/' . expand('%:t:r') . '_preview.html'
+  let l:out = expand('$TEMP') . '/' . expand('%:t:r') . '_preview.html'
   call system('pandoc ' . shellescape(l:src) . ' -s -o ' . shellescape(l:out))
-  call system('xdg-open ' . shellescape(l:out) . ' &')
+  " xdg-open (Linux) has no Windows equivalent; cmd's built-in `start`
+  " launches the file with whatever program is associated with .html (the
+  " default browser). The empty "" is a required dummy window-title
+  " argument — without it, `start` treats a quoted path as the title
+  " instead of the thing to open.
+  call system('start "" ' . shellescape(l:out))
 endfunction
 command! MarkdownPreview call MarkdownPreview()
 nnoremap <leader>p :MarkdownPreview<CR>

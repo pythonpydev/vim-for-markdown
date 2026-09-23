@@ -1,7 +1,10 @@
-# Basic Vim Markdown Setup
+# Enhanced Vim Markdown Setup
 
-A minimal, low-maintenance markdown editing setup for plain Vim — install and
-forget, not an ecosystem to manage.
+The [basic Vim setup](../01_basic_vim/README.md) plus fuzzy file finding and a
+fuzzy-browse "save as" (via fzf) — the two features that turned out to be
+worth the one extra dependency after trying the full-feature Neovim setup.
+Still no plugin manager: fzf ships its own Vim plugin alongside the CLI tool,
+so `vimrc` just points Vim's runtimepath at it.
 
 ## Quick start
 
@@ -9,8 +12,10 @@ forget, not an ecosystem to manage.
 ./setup.sh
 ```
 
-Checks you have `vim`, `pandoc`, and `wkhtmltopdf`, then symlinks `vimrc` to
-`~/.vimrc` (backing up any existing one first, with confirmation).
+Checks you have `vim`, `pandoc`, and `wkhtmltopdf` (required), and `fzf`
+(optional — everything except `<leader>ff`/`<leader>sa` works without it),
+then symlinks `vimrc` to `~/.vimrc` (backing up any existing one first, with
+confirmation).
 
 Then open the example file to see it in action:
 
@@ -20,17 +25,12 @@ vim example_template.md
 
 ## What you get
 
-- Markdown syntax highlighting — headings, bold/italic/strikethrough, list
-  markers, blockquotes, horizontal rules, links, and code all explicitly
-  coloured, in matching **light and dark themes** (`<leader>d` to toggle)
-- Spell-check on by default in markdown files
-- 80-character line width — hard-wraps as you type, with a red guide line at
-  column 81; `<leader>q` reflows the current paragraph and `<leader>80`
-  reflows the whole file (for existing or pasted text); `<leader>w` toggles
-  the limit off/on entirely
-- One-key preview to browser (`<leader>p`, via Pandoc)
-- One-key PDF export (`<leader>e`, via Pandoc + wkhtmltopdf)
-- Everything else is just standard Vim — no plugin manager, no extra ecosystem
+Everything in the [basic setup](../01_basic_vim/README.md#what-you-get), plus:
+
+- Fuzzy file finding (`<leader>ff`, via fzf) — "an easy way to open files,
+  navigate to a file and open it"
+- Fuzzy "save as" (`<leader>sa`) — browse to a folder with fzf, then type
+  just the filename, instead of typing/tab-completing a whole path
 
 Leader is `\` (backslash) by default.
 
@@ -39,7 +39,9 @@ Leader is `\` (backslash) by default.
 Words you approve with `zg` (or mark wrong with `zw`) are saved to
 `spell/en.utf-8.add` inside this project, not Vim's usual location — since
 `vimrc` lives in a synced folder (e.g. MEGA), this makes your dictionary
-follow you to every machine you symlink `vimrc` on.
+follow you to every machine you symlink `vimrc` on. This dictionary is
+separate from the basic setup's — the two projects don't share one, since
+only one of them is ever your active `~/.vimrc` at a time.
 
 If you'd rather keep it local to one machine only, remove the `spellfile=...`
 part of the `autocmd FileType markdown` line in `vimrc`. Vim's actual default
@@ -57,8 +59,8 @@ part of the `autocmd FileType markdown` line in `vimrc`. Vim's actual default
 
 ## Requirements
 
-`vim`, `pandoc`, `wkhtmltopdf`. See `vim_shortcuts.html` for install commands
-on Linux and Windows.
+`vim`, `pandoc`, `wkhtmltopdf`, and `fzf` (optional — see "What you get"
+above). See `vim_shortcuts.html` for install commands on Linux and Windows.
 
 **System clipboard (`clipboard=unnamedplus`, `"+y`/`"+p`):** on Debian/Ubuntu
 the default `vim` package is built *without* clipboard support (`vim
@@ -74,6 +76,16 @@ sudo update-alternatives --set vim /usr/bin/vim.gtk3
 (`vim-gtk3` provides the `+clipboard` build; `update-alternatives` may need
 pointing at it explicitly if `vim` is in manual mode.) Confirm with `vim
 --version | grep clipboard` — you want `+clipboard` and `+xterm_clipboard`.
+
+## Which Vim project should be my `~/.vimrc`?
+
+Only one of [`01_basic_vim`](../01_basic_vim/README.md) or this project can
+be symlinked as `~/.vimrc` at a time (running either `setup.sh` re-points the
+symlink). Since this is a strict superset of the basic setup — same
+everything, plus two extra features gated behind one optional dependency —
+there's little reason to prefer the basic one once `fzf` is installed.
+Fall back to the basic setup only if you'd rather not have `fzf` on the
+machine at all.
 
 ## Want more?
 

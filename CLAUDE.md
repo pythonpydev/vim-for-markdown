@@ -6,16 +6,18 @@ I really like the idea of having a lightweight app for editing and viewing markw
 
 However I have previously tried to set this up with varied success.  There is also the question of which version / flavour of vim to use, e.g. vim, nvim, gvim etc.
 
-This has been split into two separate sub-projects:
+This has been split into three sub-projects, plus a Windows port of the third:
 
 1. [`01_basic_vim/`](01_basic_vim/CLAUDE.md) — a simple, low-maintenance plain Vim setup with browser preview (HTML/PDF export) and spell-check.
 2. [`02_fullfeature_nvim/`](02_fullfeature_nvim/CLAUDE.md) — a feature-rich Neovim setup covering the full wishlist below.
+3. [`03_vim_enhanced/`](03_vim_enhanced/CLAUDE.md) — the basic Vim setup plus fuzzy file finding and a fuzzy "save as" (via fzf), added after those two Neovim/Telescope features proved too useful to give up in Vim. Written/tested on Linux.
+4. [`vim_enhanced_win/`](vim_enhanced_win/CLAUDE.md) — a native-Windows-11 port of `03_vim_enhanced`, for running plain Vim directly on Windows (not via WSL/Git Bash) — same features and keybindings, with the Linux-only mechanisms (`~/.vimrc` symlinking, `xdg-open`, `find`, fzf's Linux plugin paths, a GNOME-terminal redraw fix) replaced by Windows equivalents.
 
 See each sub-project's CLAUDE.md for its specific scope and tasks.
 
 ## vim vs nvim vs gvim evaluation
 
-**Recommendation: Neovim (nvim) in the terminal**, for the full-feature project. The basic project stays on plain Vim deliberately, since it's meant to be minimal.
+**Recommendation: Neovim (nvim) in the terminal**, for the full-feature project. The basic project stays on plain Vim deliberately, since it's meant to be minimal. The enhanced Vim project is a deliberate middle ground: still plain Vim (no plugin manager), but with the two Neovim/Telescope features (fuzzy find, fuzzy save-as) that turned out to be worth one extra dependency (fzf).
 
 Reasoning:
 - Most actively-developed plugins for markdown editing (table formatting, concealment, live scroll-synced preview, ToC generation, folding by heading) target Neovim.

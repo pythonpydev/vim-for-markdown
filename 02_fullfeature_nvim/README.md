@@ -33,6 +33,10 @@ nvim example_template.md
 ## What you get
 
 - Real syntax highlighting via Treesitter (markdown, embedded HTML/CSS/Python/YAML)
+- 80-character line width — hard-wraps as you type, with a red guide line at
+  column 81; `<leader>gq` reflows the current paragraph and `<leader>gG`
+  reflows the whole file (for existing or pasted text); `<leader>tw` toggles
+  the limit off/on entirely
 - Concealment / rendered markdown (headings, bold/italic, bullets shown formatted, not raw)
 - Light/dark colour theme toggle (`<leader>d`, Catppuccin Latte/Mocha)
 - Live-reloading, scroll-synced browser preview (`<leader>p`)
@@ -44,8 +48,22 @@ nvim example_template.md
 - Internal link checking (`<leader>lc`) and `gf` to jump between markdown files
 - Snippets and LSP-powered autocomplete for HTML/CSS/Python (`gd`, `K`)
 - Git integration, session persistence, fuzzy file finding (`<leader>ff`)
+- "Save as" with a visual folder browser (`<leader>sa`, via telescope-file-browser)
 
 Leader is `Space` (not `\` — this differs from the basic Vim setup).
+
+## Personal spell-check dictionary
+
+Words you approve with `zg` (or mark wrong with `zw`) are saved to
+`spell/en.utf-8.add` inside this project, not Neovim's usual location — since
+`setup.sh` symlinks this whole directory to `~/.config/nvim` and that lives in
+a synced folder (e.g. MEGA), this makes your dictionary follow you to every
+machine you symlink this config on.
+
+If you'd rather keep it local to one machine only, remove the
+`vim.opt_local.spellfile = spellfile` line in
+`lua/config/markdown-tools.lua`. Neovim's actual default (what you get
+without that override) is `~/.local/share/nvim/site/spell/en.utf-8.add`.
 
 ## Files
 
@@ -56,6 +74,7 @@ Leader is `Space` (not `\` — this differs from the basic Vim setup).
 | `lua/plugins/`                | Plugin specs: treesitter, markdown tooling, LSP, editor, UI        |
 | `setup.sh`                    | Checks dependencies and symlinks this project to `~/.config/nvim`  |
 | `example_template.md`         | Every feature exercised at once, plus a shortcut cheat-sheet       |
+| `nvim_shortcuts.md`           | Quick shortcut reference — open in Neovim itself with `<leader>h` |
 | `nvim_shortcuts.html`         | Full searchable shortcut reference, setup instructions (Linux/Windows), and a features explainer — open in any browser |
 
 ## Requirements

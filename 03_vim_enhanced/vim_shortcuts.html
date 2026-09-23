@@ -133,7 +133,7 @@
 <body>
 
 <h1>Vim Shortcuts Reference</h1>
-<div class="subtitle">Full command reference for the basic Vim markdown setup</div>
+<div class="subtitle">Full command reference for the enhanced Vim markdown setup</div>
 
 <section class="setup">
 <h2>Setup Instructions</h2>
@@ -143,20 +143,20 @@
 <div>
 <h3>Linux</h3>
 <ol>
-<li>Install Vim, Pandoc, and a PDF engine:
-<pre>sudo apt install vim pandoc wkhtmltopdf</pre>
-(Debian/Ubuntu; use your distro's package manager equivalent otherwise, e.g. <kbd>dnf</kbd>, <kbd>pacman</kbd>.)
+<li>Install Vim, Pandoc, a PDF engine, and fzf:
+<pre>sudo apt install vim pandoc wkhtmltopdf fzf</pre>
+(Debian/Ubuntu; use your distro's package manager equivalent otherwise, e.g. <kbd>dnf</kbd>, <kbd>pacman</kbd>. <kbd>fzf</kbd> powers <kbd>&lt;leader&gt;ff</kbd>/<kbd>&lt;leader&gt;sa</kbd>; everything else still works without it, those two just won't.)
 </li>
 <li>Run the bundled setup script from inside this folder — it checks the dependencies above and symlinks <kbd>vimrc</kbd> to <kbd>~/.vimrc</kbd> (backing up any existing one first, with confirmation):
 <pre>./setup.sh</pre>
 Or do it by hand instead:
-<pre>ln -s /home/ed/MEGA/app/vim_for_markdown/01_basic_vim/vimrc ~/.vimrc</pre>
+<pre>ln -s /home/ed/MEGA/app/vim_for_markdown/03_vim_enhanced/vimrc ~/.vimrc</pre>
 Or, if you already have a <kbd>~/.vimrc</kbd> and don't want to replace it, add this line to the end of it instead:
-<pre>source /home/ed/MEGA/app/vim_for_markdown/01_basic_vim/vimrc</pre>
+<pre>source /home/ed/MEGA/app/vim_for_markdown/03_vim_enhanced/vimrc</pre>
 </li>
 <li>Open a markdown file to confirm it works:
 <pre>vim notes.md</pre>
-Spell-check and markdown highlighting should be active automatically. Try <kbd>&lt;leader&gt;p</kbd> to preview in browser and <kbd>&lt;leader&gt;e</kbd> to export to PDF (default leader is <kbd>\</kbd>).
+Spell-check and markdown highlighting should be active automatically. Try <kbd>&lt;leader&gt;p</kbd> to preview in browser, <kbd>&lt;leader&gt;e</kbd> to export to PDF, and <kbd>&lt;leader&gt;ff</kbd> to fuzzy-find a file (default leader is <kbd>\</kbd>).
 </li>
 </ol>
 </div>
@@ -169,15 +169,16 @@ Spell-check and markdown highlighting should be active automatically. Try <kbd>&
 or via a package manager:
 <pre>winget install vim.vim</pre>
 </li>
-<li>Install Pandoc and a PDF engine:
+<li>Install Pandoc, a PDF engine, and fzf:
 <pre>winget install --id JohnMacFarlane.Pandoc
-winget install --id wkhtmltopdf.wkhtmltopdf</pre>
-Ensure both are added to your <kbd>PATH</kbd> (the installers usually do this automatically; if <kbd>pandoc --version</kbd> in a new terminal fails, add their install folders to PATH manually).
+winget install --id wkhtmltopdf.wkhtmltopdf
+winget install --id junegunn.fzf</pre>
+Ensure all three are added to your <kbd>PATH</kbd> (the installers usually do this automatically; if <kbd>pandoc --version</kbd> in a new terminal fails, add their install folders to PATH manually). fzf's own Vim plugin usually installs to <kbd>~/.fzf</kbd> on Windows too — the runtimepath detection in <kbd>vimrc</kbd> already checks that path.
 </li>
 <li>Find/create your Vim config file. On Windows this is usually:
 <pre>$HOME\_vimrc</pre>
 (often <kbd>C:\Users\&lt;you&gt;\_vimrc</kbd>). Add this line to it, pointing at wherever you've placed this project's <kbd>vimrc</kbd> file (adjust the path, using forward slashes even on Windows):
-<pre>source C:/path/to/vim_for_markdown/01_basic_vim/vimrc</pre>
+<pre>source C:/path/to/vim_for_markdown/03_vim_enhanced/vimrc</pre>
 </li>
 <li>Open a markdown file to confirm it works:
 <pre>vim notes.md</pre>
@@ -201,12 +202,14 @@ Once <kbd>vimrc</kbd> is loaded, opening any <kbd>.md</kbd> / <kbd>.markdown</kb
 <li><strong>Markdown syntax highlighting</strong> — headings, bold/italic/strikethrough, list markers, blockquotes, horizontal rules, links, and code are all explicitly coloured (not just left at Vim's uncoloured defaults), in matching light and dark themes. Toggle between them with <kbd>&lt;leader&gt;d</kbd>. Open <kbd>example_template.md</kbd> in this folder to see every element styled at once.</li>
 <li><strong>Word wrap tuned for prose</strong> — <kbd>wrap</kbd> and <kbd>linebreak</kbd> are set for markdown files so long lines wrap at word boundaries instead of mid-word, matching how prose is usually edited (unlike Vim's code-editing defaults).</li>
 <li><strong>Spell-check on by default</strong> — misspelled words are underlined as you type (British English dictionary by default; change <kbd>spelllang</kbd> in <kbd>vimrc</kbd> for another variant). Use <kbd>]s</kbd> / <kbd>[s</kbd> to jump between misspelled words and <kbd>z=</kbd> for suggestions. Toggle it off entirely with <kbd>&lt;leader&gt;s</kbd> if it gets in the way.</li>
+<li><strong>Fuzzy file finding</strong> — <kbd>&lt;leader&gt;ff</kbd> opens fzf to fuzzy-search and open any file in the project (needs the <kbd>fzf</kbd> package installed).</li>
+<li><strong>Fuzzy "save as"</strong> — <kbd>&lt;leader&gt;sa</kbd> browses to a folder with fzf, then prompts for just the filename, instead of typing/tab-completing a whole path.</li>
 <li><strong>One-key browser preview</strong> — <kbd>&lt;leader&gt;p</kbd> renders the current file to HTML (via Pandoc) and opens it in your default browser, so you can see headings, tables, code blocks etc. rendered properly rather than as raw markdown syntax. Re-run it any time to refresh after edits.</li>
 <li><strong>One-key PDF export</strong> — <kbd>&lt;leader&gt;e</kbd> converts the current file straight to a shareable PDF (via Pandoc + wkhtmltopdf), written alongside the source file.</li>
 <li><strong>All of standard Vim</strong> — since this is plain Vim with a small config layered on top (not a distribution or heavy plugin stack), every normal Vim shortcut below still works exactly as usual, in any file type.</li>
 </ul>
 <p style="font-size:0.85rem;color:#a6adc8;">
-This is the deliberately minimal setup. For extras like live-reloading preview, table auto-formatting, a table of contents, link checking, autocomplete, or git integration, see the companion full-feature Neovim setup instead.
+This builds on the basic Vim setup with just the two features (fuzzy file finding, fuzzy save-as) worth the one extra dependency (fzf). For everything else — live-reloading preview, table auto-formatting, a table of contents, link checking, autocomplete, git integration — see the companion full-feature Neovim setup instead.
 </p>
 </section>
 
@@ -514,10 +517,14 @@ Example: <kbd>di"</kbd> deletes inside quotes, <kbd>ca(</kbd> changes a parenthe
 <tr><td class="key"><kbd>&lt;leader&gt;e</kbd></td><td>Export current markdown file to PDF (via pandoc + wkhtmltopdf)</td></tr>
 <tr><td class="key"><kbd>&lt;leader&gt;h</kbd></td><td>Open the quick-reference version of this page (<kbd>vim_shortcuts.md</kbd>) directly in Vim</td></tr>
 <tr><td class="key"><kbd>&lt;leader&gt;r</kbd></td><td>Force a full terminal repaint — fixes stray red blocks/redraw glitches some terminals leave behind, without resizing your window</td></tr>
+<tr><td class="key"><kbd>&lt;leader&gt;ff</kbd></td><td>Fuzzy-find and open a file (via fzf; needs the <kbd>fzf</kbd> package installed)</td></tr>
+<tr><td class="key"><kbd>&lt;leader&gt;sa</kbd></td><td>Save as — browse to a folder with fzf, then type just the filename</td></tr>
 <tr><td class="key"><kbd>:MarkdownPreview</kbd></td><td>Same as &lt;leader&gt;p, callable directly</td></tr>
 <tr><td class="key"><kbd>:MarkdownExportPdf</kbd></td><td>Same as &lt;leader&gt;e, callable directly</td></tr>
 <tr><td class="key"><kbd>:MarkdownHelp</kbd></td><td>Same as &lt;leader&gt;h, callable directly</td></tr>
 <tr><td class="key"><kbd>:RefreshTerminal</kbd></td><td>Same as &lt;leader&gt;r, callable directly</td></tr>
+<tr><td class="key"><kbd>:MarkdownFuzzyFind</kbd></td><td>Same as &lt;leader&gt;ff, callable directly</td></tr>
+<tr><td class="key"><kbd>:MarkdownSaveAs</kbd></td><td>Same as &lt;leader&gt;sa, callable directly</td></tr>
 </table>
 </section>
 
@@ -539,7 +546,7 @@ Example: <kbd>di"</kbd> deletes inside quotes, <kbd>ca(</kbd> changes a parenthe
 </div>
 
 <footer>
-  Vim Shortcuts Reference — part of the Basic Vim Markdown Setup project.
+  Vim Shortcuts Reference — part of the Enhanced Vim Markdown Setup project.
 </footer>
 
 <script>

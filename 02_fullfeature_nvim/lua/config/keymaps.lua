@@ -13,15 +13,32 @@ map("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear search highlight" })
 -- Spell-check toggle
 map("n", "<leader>ts", "<cmd>set spell!<CR>", { desc = "Toggle spell-check" })
 
--- Save as: prompts for a new filename, pre-filled with the current one.
-map("n", "<leader>sa", function()
-  local current = vim.fn.expand("%:p")
-  vim.ui.input({ prompt = "Save as: ", default = current, completion = "file" }, function(path)
-    if path and path ~= "" then
-      vim.cmd("saveas " .. vim.fn.fnameescape(path))
-    end
-  end)
-end, { desc = "Save as..." })
+-- Fix stale terminal redraw glitches: some terminals (seen with
+-- gnome-terminal/VTE) occasionally leave stray coloured cells on screen
+-- after fast redraws (e.g. spell-check highlighting) that a normal redraw
+-- doesn't clear, but resizing the window does. This sends the same
+-- "resize" escape sequence the window manager would (shrink by one column,
+-- then straight back), forcing a full repaint without actually changing
+-- your terminal's size.
+map("n", "<leader>rt", function()
+  local lines, columns = vim.o.lines, vim.o.columns
+  vim.fn.system(string.format('printf "\\e[8;%d;%dt" > /dev/tty', lines, columns - 1))
+  vim.wait(100)
+  vim.fn.system(string.format('printf "\\e[8;%d;%dt" > /dev/tty', lines, columns))
+end, { desc = "Force a full terminal repaint (fixes stray redraw glitches)" })
+
+-- 80-column reflow: textwidth only wraps text as you actively type it; it
+-- does nothing to text that's already in the buffer (an existing file, or
+-- anything pasted in). These reflow it on demand, inserting real line breaks
+-- at column 80. <leader>tw toggles the limit itself off/on (see
+-- lua/config/markdown-tools.lua).
+map("n", "<leader>gq", "gqap", { desc = "Reflow paragraph to 80 columns" })
+map("n", "<leader>gG", "gggqG", { desc = "Reflow whole file to 80 columns" })
+map("n", "<leader>tw", "<cmd>MarkdownToggleWrapLimit<CR>", { desc = "Toggle 80-column wrap limit" })
+
+-- <leader>sa (Save as) now lives in lua/plugins/editor.lua, alongside the
+-- telescope-file-browser.nvim dependency it needs (browse to a folder, then
+-- <C-s>, then type just the filename).
 
 -- Quick filetype switching (markdown docs that embed html/python/css snippets
 -- sometimes need to briefly force filetype for editing convenience/autocomplete).

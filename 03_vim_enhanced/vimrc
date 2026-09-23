@@ -1,6 +1,9 @@
-" Basic Vim Markdown Setup
+" Enhanced Vim Markdown Setup
+" Same as the basic setup, plus fzf-powered fuzzy file finding and a
+" fuzzy-browse "save as", requested after trying those two features in the
+" full-feature Neovim setup and wanting them without the rest of its weight.
 " Source this from your ~/.vimrc with:
-"   source /home/ed/MEGA/app/vim_for_markdown/01_basic_vim/vimrc
+"   source /home/ed/MEGA/app/vim_for_markdown/03_vim_enhanced/vimrc
 " or symlink it as ~/.vimrc directly.
 
 " --- Clipboard ----------------------------------------------------------
@@ -11,6 +14,31 @@ set clipboard=unnamedplus
 " Relative numbers (distance from cursor) plus the actual number on the
 " current line, so counted motions like 5dd/3j are easy to read off.
 set number relativenumber
+" 'cursorline' is what makes Vim use the CursorLineNr highlight group for
+" the current line's number at all (without it, CursorLineNr is defined but
+" never applied) — see the LineNr/CursorLineNr colours set per-theme below.
+" cursorlineopt=number restricts the "current line" highlight to the number
+" column only, so the text line itself isn't tinted.
+set cursorline
+set cursorlineopt=number
+
+" --- Cursor shape + colour (terminal) --------------------------------------
+" Block shape in every mode, but blinking in Insert/Replace and steady in
+" Normal/Visual/Command-line — plus an orange cursor colour throughout.
+" guicursor drives shape+blink in GUI Vim; t_SI/t_EI/t_SR send the DECSCUSR
+" escape codes terminal Vim needs for the same effect (some xterm-256color
+" terminfo entries don't wire up guicursor to the terminal on their own, so
+" these are set explicitly rather than relied on). The leading OSC 12
+" sequence in each sets the terminal's cursor colour (not covered by
+" DECSCUSR, and not the same as the 'Cursor' highlight group below, which
+" only affects GUI Vim's own cursor).
+set guicursor=n-v-c-sm:block-blinkon0,i-ci-ve:block-blinkwait10-blinkon250-blinkoff250,r-cr-o:block-blinkon0
+if !has('gui_running')
+  let s:cursor_orange = "\<Esc>]12;#ffa500\x07"
+  let &t_SI = s:cursor_orange . "\<Esc>[1 q"  " Insert: blinking block
+  let &t_SR = s:cursor_orange . "\<Esc>[1 q"  " Replace: blinking block
+  let &t_EI = s:cursor_orange . "\<Esc>[2 q"  " Normal/other: steady block
+endif
 
 " --- Markdown ---------------------------------------------------------
 filetype plugin indent on
@@ -39,7 +67,7 @@ call mkdir(fnamemodify(s:spellfile, ':h'), 'p')
 " you type past column 80 (gq/gqap reflows a paragraph that's already there,
 " e.g. pasted text); colorcolumn draws a guide line at column 81 (one past
 " the limit, so it doesn't sit on top of a character at column 80 itself),
-" coloured bright red per-theme below.
+" coloured dark red per-theme below.
 augroup markdown_setup
   autocmd!
   execute 'autocmd FileType markdown setlocal wrap linebreak spell spelllang=en_gb spellfile=' . s:spellfile . ' textwidth=80 colorcolumn=81'
@@ -88,6 +116,72 @@ endfunction
 command! ToggleWrapLimit call ToggleWrapLimit()
 nnoremap <leader>w :call ToggleWrapLimit()<CR>
 
+" --- Fuzzy file finder + fuzzy "save as" (fzf) -----------------------------
+" fzf ships its own Vim plugin (:FZF command, fzf#run() function) right
+" alongside the CLI binary — no plugin manager or extra vim plugin needed,
+" just point Vim's runtimepath at wherever the fzf package installed it.
+" Requires the `fzf` package (see README/setup.sh); if it's missing,
+" <leader>ff and <leader>sa print a message instead of erroring.
+for s:fzf_dir in [
+      \ '/usr/share/doc/fzf/examples',
+      \ expand('~/.fzf'),
+      \ '/usr/local/opt/fzf',
+      \ '/opt/homebrew/opt/fzf',
+      \ ]
+  if filereadable(s:fzf_dir . '/plugin/fzf.vim')
+    execute 'set rtp+=' . fnameescape(s:fzf_dir)
+    break
+  endif
+endfor
+unlet! s:fzf_dir
+
+" Fuzzy-find and open a file ("an easy way to open files, navigate to a
+" file and open it") — mapped to <leader>ff to match the full-feature
+" Neovim setup's Telescope binding.
+function! MarkdownFuzzyFind()
+  if !exists(':FZF')
+    echo 'fzf not found — install it (see README), then restart Vim'
+    return
+  endif
+  FZF
+endfunction
+command! MarkdownFuzzyFind call MarkdownFuzzyFind()
+nnoremap <leader>ff :MarkdownFuzzyFind<CR>
+
+" Save as, but browse to the target folder with fzf instead of typing/
+" tab-completing the whole path — mirrors the full-feature Neovim setup's
+" telescope-file-browser-based <leader>sa. Browse (fuzzy-filter as you
+" type), Enter to pick a folder, then a small prompt (pre-filled with the
+" current filename) for the final name before saving.
+function! s:MarkdownSaveAsInDir(bufnr, original_name, selected)
+  let l:dir = substitute(fnamemodify(a:selected, ':p'), '/$', '', '')
+  let l:target = input('Save as: ', l:dir . '/' . a:original_name, 'file')
+  if !empty(l:target)
+    let l:winid = bufwinid(a:bufnr)
+    if l:winid != -1
+      call win_gotoid(l:winid)
+    endif
+    execute 'saveas ' . fnameescape(l:target)
+  endif
+endfunction
+
+function! MarkdownSaveAs()
+  if !exists('*fzf#run')
+    echo 'fzf not found — install it (see README), then restart Vim'
+    return
+  endif
+  let l:bufnr = bufnr('%')
+  let l:original_name = expand('%:t')
+  call fzf#run(fzf#wrap({
+        \ 'source': 'find . -type d',
+        \ 'dir': expand('%:p:h'),
+        \ 'sink': function('s:MarkdownSaveAsInDir', [l:bufnr, l:original_name]),
+        \ 'options': ['--prompt', 'Save in> '],
+        \ }))
+endfunction
+command! MarkdownSaveAs call MarkdownSaveAs()
+nnoremap <leader>sa :MarkdownSaveAs<CR>
+
 " --- Markdown syntax highlighting (light/dark) ---------------------------
 " Colors real markdown elements: headings, bold/italic, bullets, links,
 " code, blockquotes, horizontal rules. Uses Vim's actual built-in markdown
@@ -100,11 +194,11 @@ function! s:LightMarkdownTheme()
   colorscheme default
   hi Normal       guibg=#ffffff guifg=#000000 ctermbg=White ctermfg=Black
   hi CursorLine   guibg=#f0f0f0 ctermbg=254 cterm=NONE gui=NONE
-  hi LineNr       guifg=#808080 ctermfg=244
-  hi CursorLineNr guifg=#000000 ctermfg=Black
+  hi LineNr       guibg=#0000af guifg=#ffff00 ctermbg=DarkBlue ctermfg=Yellow
+  hi CursorLineNr guibg=#0000af guifg=#ff0000 gui=bold ctermbg=DarkBlue ctermfg=Red cterm=bold
   hi StatusLine   guibg=#d0d0d0 guifg=#000000 ctermbg=252 ctermfg=Black
   hi StatusLineNC guibg=#e0e0e0 guifg=#606060 ctermbg=254 ctermfg=244
-  hi Cursor       guibg=#ff8c00 guifg=bg
+  hi Cursor       guibg=#ffa500 guifg=bg
 
   " Headings: bold red, delimiter (#) slightly muted red
   hi markdownH1 guifg=#c00000 gui=bold ctermfg=Red cterm=bold
@@ -147,8 +241,8 @@ function! s:LightMarkdownTheme()
   hi SpellLocal guifg=#000000 guibg=NONE gui=undercurl guisp=#008080 ctermfg=Black ctermbg=NONE cterm=underline
 
   " Guide line at column 81 (see textwidth/colorcolumn above). A single
-  " character cell is the thinnest line the terminal can draw; darker red
-  " here makes it less visually loud than a full-brightness red.
+  " character cell is the thinnest line the terminal can draw; dark red
+  " here keeps it less visually loud than a full-brightness red.
   hi ColorColumn guibg=#8b0000 ctermbg=DarkRed
 
   let g:markdown_theme = 'light'
@@ -159,11 +253,11 @@ function! s:DarkMarkdownTheme()
   colorscheme default
   hi Normal       guibg=#1e1e1e guifg=#d4d4d4 ctermbg=Black ctermfg=White
   hi CursorLine   guibg=#2a2a2a ctermbg=235 cterm=NONE gui=NONE
-  hi LineNr       guifg=#6a6a6a ctermfg=244
-  hi CursorLineNr guifg=#d4d4d4 ctermfg=White
+  hi LineNr       guibg=#0000af guifg=#ffff00 ctermbg=DarkBlue ctermfg=Yellow
+  hi CursorLineNr guibg=#0000af guifg=#ff0000 gui=bold ctermbg=DarkBlue ctermfg=Red cterm=bold
   hi StatusLine   guibg=#3a3a3a guifg=#d4d4d4 ctermbg=238 ctermfg=White
   hi StatusLineNC guibg=#2a2a2a guifg=#808080 ctermbg=235 ctermfg=244
-  hi Cursor       guibg=#ff8c00 guifg=bg
+  hi Cursor       guibg=#ffa500 guifg=bg
 
   " Headings: bold light red/orange, delimiter muted
   hi markdownH1 guifg=#ff6b6b gui=bold ctermfg=LightRed cterm=bold
@@ -206,8 +300,8 @@ function! s:DarkMarkdownTheme()
   hi SpellLocal guifg=#d4d4d4 guibg=NONE gui=undercurl guisp=#4ec9b0 ctermfg=White ctermbg=NONE cterm=underline
 
   " Guide line at column 81 (see textwidth/colorcolumn above). A single
-  " character cell is the thinnest line the terminal can draw; darker red
-  " here makes it less visually loud than a full-brightness red.
+  " character cell is the thinnest line the terminal can draw; dark red
+  " here keeps it less visually loud than a full-brightness red.
   hi ColorColumn guibg=#8b0000 ctermbg=DarkRed
 
   let g:markdown_theme = 'dark'
@@ -227,7 +321,7 @@ endfunction
 " reopened. Persist it to a small state file instead (mirrors where Vim/
 " Neovim already keep their own state, e.g. swap files under
 " ~/.local/state/) so <leader>d survives quitting and reopening Vim.
-let s:theme_state_file = expand('~/.local/state/vim_markdown_theme')
+let s:theme_state_file = expand('~/.local/state/vim_enhanced_markdown_theme')
 
 function! s:LoadSavedTheme()
   if filereadable(s:theme_state_file)

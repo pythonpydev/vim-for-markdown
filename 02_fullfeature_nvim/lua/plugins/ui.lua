@@ -20,6 +20,10 @@ return {
           vim.o.background = "dark"
           vim.cmd.colorscheme("catppuccin-mocha")
         end
+        -- 80-column guide line (see textwidth/colorcolumn in
+        -- markdown-tools.lua), bright red in both themes. A single character
+        -- cell is the thinnest line the terminal can draw.
+        vim.api.nvim_set_hl(0, "ColorColumn", { bg = "#ff0000" })
         local ok, lualine = pcall(require, "lualine")
         if ok then lualine.refresh() end
       end

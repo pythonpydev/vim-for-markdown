@@ -46,12 +46,12 @@ Extended (from the fuller feature brainstorm):
 - `init.lua` — entry point; loads options, bootstraps lazy.nvim, loads keymaps and the markdown-tools module.
 - `lua/config/options.lua` — core editor options (leader = `<Space>`, numbers, clipboard, etc).
 - `lua/config/lazy.lua` — bootstraps the lazy.nvim plugin manager.
-- `lua/config/keymaps.lua` — keymaps not owned by a specific plugin (save, save-as, quit, spell toggle, filetype switching, window navigation).
+- `lua/config/keymaps.lua` — keymaps not owned by a specific plugin (save, quit, spell toggle, filetype switching, window navigation, terminal-repaint fix). Save-as lives in `lua/plugins/editor.lua` instead, alongside the telescope-file-browser.nvim dependency it needs.
 - `lua/config/markdown-tools.lua` — HTML/PDF export commands (via Pandoc) and internal link/anchor checking; loaded directly (not as a lazy plugin) so it's always available.
 - `lua/plugins/treesitter.lua` — nvim-treesitter (main branch/new API) for real syntax highlighting, folding by heading, and yaml front-matter injection.
 - `lua/plugins/markdown.lua` — render-markdown.nvim (concealment), markdown-preview.nvim (live browser preview), vim-table-mode (table formatting), autolist.nvim (list continuation), markdown-toc.nvim (ToC), zen-mode.nvim (distraction-free mode).
 - `lua/plugins/lsp.lua` — mason.nvim + mason-lspconfig + nvim-lspconfig (html, cssls, pyright, marksman) + nvim-cmp + LuaSnip for autocomplete/snippets.
-- `lua/plugins/editor.lua` — telescope.nvim (file finding/navigation), gitsigns.nvim (git integration), persistence.nvim (session persistence).
+- `lua/plugins/editor.lua` — telescope.nvim (file finding/navigation) + telescope-file-browser.nvim (visual folder browsing for save-as), gitsigns.nvim (git integration), persistence.nvim (session persistence).
 - `lua/plugins/ui.lua` — catppuccin colorscheme with a light/dark toggle (`<leader>d`, Latte/Mocha), lualine statusline with a word-count/reading-time component.
 - `nvim_shortcuts.html` — searchable full shortcut reference, setup instructions (Linux/Windows), and a features/capabilities explainer.
 - `setup.sh` — checks dependencies (including tree-sitter-cli, offering to install it via npm), and symlinks this whole directory to `~/.config/nvim` (backing up any existing config first, with confirmation). Run with `./setup.sh`. Linux-only (see `nvim_shortcuts.html` for manual Windows steps). Tested in a sandboxed `$HOME`: handles no existing config and re-running (idempotent, no-op).
