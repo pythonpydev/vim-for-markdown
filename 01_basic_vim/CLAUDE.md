@@ -33,8 +33,9 @@ Anything from the full feature list (table formatting, ToC generation, LSP autoc
 ## Custom keybindings (defined in `vimrc`)
 
 - `<leader>s` — toggle spell-check
-- `<leader>p` (`:MarkdownPreview`) — render current `.md` file to HTML via pandoc and open in browser
-- `<leader>e` (`:MarkdownExportPdf`) — export current `.md` file to PDF via pandoc + wkhtmltopdf
+- `<leader>p` (`:MarkdownPreview`) — render current `.md` file to HTML via pandoc and open in browser. Saves unsaved changes first, refuses cleanly if the buffer has no filename yet, and reports pandoc's error instead of opening a missing file if the conversion fails. Passes `-f markdown-yaml_metadata_block` so a mid-document `---`...`---` pair (e.g. a horizontal rule before/after a table) isn't misparsed as YAML front matter.
+- `<leader>e` (`:MarkdownExportPdf`) — export current `.md` file to PDF via pandoc + wkhtmltopdf (same `-f markdown-yaml_metadata_block` fix as preview)
+- `<leader>t` (`:MarkdownInsertTable`) — insert a simple 2-column, header + 2-data-row markdown table below the current line, cursor left on the first placeholder
 - `<leader>d` (`:MarkdownThemeToggle`) — toggle between light and dark colour theme
 
 ## Markdown syntax highlighting
@@ -42,3 +43,7 @@ Anything from the full feature list (table formatting, ToC generation, LSP autoc
 `vimrc` defines explicit colours for Vim's real built-in markdown syntax groups (headings, bold/italic/strikethrough, list markers, blockquotes, horizontal rules, links, inline/fenced code) in two themes (light/dark), toggled with `<leader>d`. The light theme is a corrected, extended version of the user's earlier Notepad++-style scheme (backed up as above) — the original only styled headings/bold/code and referenced one non-existent-in-context group; this version covers every element and both themes.
 
 **Important implementation detail:** Vim's own `syntax/markdown.vim` sets `hi def link` defaults the moment syntax loads for a buffer, which silently wins over any colours set earlier (verified by testing — an earlier version of this config had colours silently overridden this way). The fix is hooking `autocmd Syntax markdown` to (re)apply our theme's colours *after* the syntax file finishes loading, guaranteeing they stick. Verified via headless Vim against `example_template.md`: all groups resolve to the intended hex colours in both light and dark mode, and the toggle works.
+
+## Current line number
+
+`CursorLineNr` is set to bold bright red text on a lime green background in both themes (requested explicitly, rather than derived from the light/dark palette) — `cursorline`/`cursorlineopt=number` restrict the highlight to the number column only, so the text line itself isn't tinted.

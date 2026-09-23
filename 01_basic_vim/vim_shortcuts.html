@@ -201,8 +201,10 @@ Once <kbd>vimrc</kbd> is loaded, opening any <kbd>.md</kbd> / <kbd>.markdown</kb
 <li><strong>Markdown syntax highlighting</strong> — headings, bold/italic/strikethrough, list markers, blockquotes, horizontal rules, links, and code are all explicitly coloured (not just left at Vim's uncoloured defaults), in matching light and dark themes. Toggle between them with <kbd>&lt;leader&gt;d</kbd>. Open <kbd>example_template.md</kbd> in this folder to see every element styled at once.</li>
 <li><strong>Word wrap tuned for prose</strong> — <kbd>wrap</kbd> and <kbd>linebreak</kbd> are set for markdown files so long lines wrap at word boundaries instead of mid-word, matching how prose is usually edited (unlike Vim's code-editing defaults).</li>
 <li><strong>Spell-check on by default</strong> — misspelled words are underlined as you type (British English dictionary by default; change <kbd>spelllang</kbd> in <kbd>vimrc</kbd> for another variant). Use <kbd>]s</kbd> / <kbd>[s</kbd> to jump between misspelled words and <kbd>z=</kbd> for suggestions. Toggle it off entirely with <kbd>&lt;leader&gt;s</kbd> if it gets in the way.</li>
-<li><strong>One-key browser preview</strong> — <kbd>&lt;leader&gt;p</kbd> renders the current file to HTML (via Pandoc) and opens it in your default browser, so you can see headings, tables, code blocks etc. rendered properly rather than as raw markdown syntax. Re-run it any time to refresh after edits.</li>
+<li><strong>One-key browser preview</strong> — <kbd>&lt;leader&gt;p</kbd> renders the current file to HTML (via Pandoc) and opens it in your default browser, so you can see headings, tables, code blocks etc. rendered properly rather than as raw markdown syntax. Re-run it any time to refresh after edits. Saves unsaved changes first, and reports an error instead of opening a missing file if Pandoc fails (e.g. on an unsaved-to-disk buffer).</li>
 <li><strong>One-key PDF export</strong> — <kbd>&lt;leader&gt;e</kbd> converts the current file straight to a shareable PDF (via Pandoc + wkhtmltopdf), written alongside the source file.</li>
+<li><strong>One-key table skeleton</strong> — <kbd>&lt;leader&gt;t</kbd> inserts a simple 2-column, header + 2-data-row markdown table below the current line, so you don't have to remember the pipe/dash syntax from scratch.</li>
+<li><strong>Current line number stands out</strong> — the active line's number is shown bold bright red on a lime green background, in both light and dark themes, so you can spot your cursor's row at a glance.</li>
 <li><strong>All of standard Vim</strong> — since this is plain Vim with a small config layered on top (not a distribution or heavy plugin stack), every normal Vim shortcut below still works exactly as usual, in any file type.</li>
 </ul>
 <p style="font-size:0.85rem;color:#a6adc8;">
@@ -510,11 +512,13 @@ Example: <kbd>di"</kbd> deletes inside quotes, <kbd>ca(</kbd> changes a parenthe
 <tr><td class="key"><kbd>&lt;leader&gt;q</kbd></td><td>Reflow current paragraph to 80 columns (fixes existing/pasted text; textwidth only wraps as you actively type)</td></tr>
 <tr><td class="key"><kbd>&lt;leader&gt;80</kbd></td><td>Reflow the whole file to 80 columns</td></tr>
 <tr><td class="key"><kbd>&lt;leader&gt;d</kbd></td><td>Toggle light/dark colour theme</td></tr>
-<tr><td class="key"><kbd>&lt;leader&gt;p</kbd></td><td>Preview current markdown file in browser (via pandoc)</td></tr>
+<tr><td class="key"><kbd>&lt;leader&gt;p</kbd></td><td>Preview current markdown file in browser (via pandoc); saves unsaved changes first and reports an error instead of opening a missing file if pandoc fails</td></tr>
 <tr><td class="key"><kbd>&lt;leader&gt;e</kbd></td><td>Export current markdown file to PDF (via pandoc + wkhtmltopdf)</td></tr>
+<tr><td class="key"><kbd>&lt;leader&gt;t</kbd></td><td>Insert a simple 2-column table skeleton (header + 2 data rows) below the current line</td></tr>
 <tr><td class="key"><kbd>&lt;leader&gt;h</kbd></td><td>Open the quick-reference version of this page (<kbd>vim_shortcuts.md</kbd>) directly in Vim</td></tr>
 <tr><td class="key"><kbd>&lt;leader&gt;r</kbd></td><td>Force a full terminal repaint — fixes stray red blocks/redraw glitches some terminals leave behind, without resizing your window</td></tr>
 <tr><td class="key"><kbd>:MarkdownPreview</kbd></td><td>Same as &lt;leader&gt;p, callable directly</td></tr>
+<tr><td class="key"><kbd>:MarkdownInsertTable</kbd></td><td>Same as &lt;leader&gt;t, callable directly</td></tr>
 <tr><td class="key"><kbd>:MarkdownExportPdf</kbd></td><td>Same as &lt;leader&gt;e, callable directly</td></tr>
 <tr><td class="key"><kbd>:MarkdownHelp</kbd></td><td>Same as &lt;leader&gt;h, callable directly</td></tr>
 <tr><td class="key"><kbd>:RefreshTerminal</kbd></td><td>Same as &lt;leader&gt;r, callable directly</td></tr>

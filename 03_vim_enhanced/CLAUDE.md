@@ -61,7 +61,7 @@ so there's no real need to share one).
 
 All of the [basic setup's](../01_basic_vim/CLAUDE.md#custom-keybindings-defined-in-vimrc)
 (`<leader>s`, `<leader>w`, `<leader>q`, `<leader>80`, `<leader>d`, `<leader>p`,
-`<leader>e`, `<leader>h`, `<leader>r`), plus:
+`<leader>e`, `<leader>t`, `<leader>h`, `<leader>r`), plus:
 
 - `<leader>ff` (`:MarkdownFuzzyFind`) — fuzzy-find and open a file via fzf
 - `<leader>sa` (`:MarkdownSaveAs`) — fuzzy-browse to a folder via fzf, then

@@ -85,7 +85,8 @@ The leader key in this config is `Space` (not `\` as in plain Vim). Once set up,
 - **Concealment / rendered markdown** — headings, bold/italic, bullets and horizontal rules are displayed formatted in-buffer instead of showing raw `**`/`_`/`#` symbols (via render-markdown.nvim).
 - **Live-reloading browser preview** — `<leader>p` opens a scroll-synced live preview in your browser that updates as you type.
 - **Static HTML/PDF export** — `<leader>eh` exports to a standalone HTML file and opens it; `<leader>ep` exports straight to PDF (both via Pandoc).
-- **Table auto-formatting** — toggle with `<leader>tm`; markdown tables realign their `|` columns as you edit.
+- **Table auto-formatting** — toggle with `<leader>tm`; markdown tables realign their `|` columns as you edit. `<leader>t` inserts a simple 2-column, header + 2-data-row table skeleton below the current line to get started.
+- **Current line number highlighted** — a bold, theme-matched Catppuccin green marks the active line's number in both light and dark themes; ordinary numbers use a higher-contrast colour than the default too.
 - **Auto-continuing lists** — pressing Enter inside a bullet or numbered list automatically inserts the next marker.
 - **Folding by heading** — collapse/expand sections with `za`/`zo`/`zc` (folds start open).
 - **Distraction-free writing mode** — `<leader>z` toggles a centered, chrome-free writing view.
@@ -112,6 +113,7 @@ The leader key in this config is `Space` (not `\` as in plain Vim). Once set up,
 | `<leader>h`    | Open this shortcut reference (nvim_shortcuts.md)                                                               |
 | `<leader>rt`   | Force a full terminal repaint (fixes stray red blocks/redraw glitches some terminals leave behind)             |
 | `<leader>tm`   | Toggle table mode (auto-align tables)                                                                          |
+| `<leader>t`    | Insert a simple 2-column table skeleton (header + 2 data rows) below the current line                          |
 | `<leader>tc`   | Insert/update table of contents                                                                                |
 | `<leader>z`    | Toggle zen (distraction-free) mode                                                                             |
 | `<leader>ts`   | Toggle spell-check                                                                                             |

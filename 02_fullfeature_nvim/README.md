@@ -41,7 +41,10 @@ nvim example_template.md
 - Light/dark colour theme toggle (`<leader>d`, Catppuccin Latte/Mocha)
 - Live-reloading, scroll-synced browser preview (`<leader>p`)
 - Static HTML/PDF export (`<leader>eh` / `<leader>ep`, via Pandoc)
-- Table auto-formatting (`<leader>tm`)
+- Table auto-formatting (`<leader>tm`); `<leader>t` inserts a simple 2-column
+  table skeleton to get started
+- Current line number highlighted in a theme-matched Catppuccin green, bold,
+  in both light and dark themes
 - Auto-continuing lists, folding by heading, distraction-free mode (`<leader>z`)
 - Word count / reading time in the statusline
 - Table of contents generation (`<leader>tc`)

@@ -66,8 +66,10 @@ Once `vimrc` is loaded, opening any `.md` / `.markdown` file in Vim automaticall
 - **Markdown syntax highlighting** — headings, bold/italic/strikethrough, list markers, blockquotes, horizontal rules, links, and code are all explicitly coloured (not just left at Vim's uncoloured defaults), in matching light and dark themes. Toggle between them with `<leader>d`. Open `example_template.md` in this folder to see every element styled at once.
 - **Word wrap tuned for prose** — `wrap` and `linebreak` are set for markdown files so long lines wrap at word boundaries instead of mid-word, matching how prose is usually edited (unlike Vim's code-editing defaults).
 - **Spell-check on by default** — misspelled words are underlined as you type (British English dictionary by default; change `spelllang` in `vimrc` for another variant). Use `]s` / `[s` to jump between misspelled words and `z=` for suggestions. Toggle it off entirely with `<leader>s` if it gets in the way.
-- **One-key browser preview** — `<leader>p` renders the current file to HTML (via Pandoc) and opens it in your default browser, so you can see headings, tables, code blocks etc. rendered properly rather than as raw markdown syntax. Re-run it any time to refresh after edits.
+- **One-key browser preview** — `<leader>p` renders the current file to HTML (via Pandoc) and opens it in your default browser, so you can see headings, tables, code blocks etc. rendered properly rather than as raw markdown syntax. Re-run it any time to refresh after edits. Saves unsaved changes first, and reports an error instead of opening a missing file if Pandoc fails (e.g. on an unsaved-to-disk buffer).
 - **One-key PDF export** — `<leader>e` converts the current file straight to a shareable PDF (via Pandoc + wkhtmltopdf), written alongside the source file.
+- **One-key table skeleton** — `<leader>t` inserts a simple 2-column, header + 2-data-row markdown table below the current line, so you don't have to remember the pipe/dash syntax from scratch.
+- **Current line number stands out** — the active line's number is shown bold bright red on a lime green background, in both light and dark themes, so you can spot your cursor's row at a glance.
 - **All of standard Vim** — since this is plain Vim with a small config layered on top (not a distribution or heavy plugin stack), every normal Vim shortcut below still works exactly as usual, in any file type.
 
 This is the deliberately minimal setup. For extras like live-reloading preview, table auto-formatting, a table of contents, link checking, autocomplete, or git integration, see the companion full-feature Neovim setup instead.
@@ -350,11 +352,13 @@ This is the deliberately minimal setup. For extras like live-reloading preview, 
 | `<leader>q`          | Reflow current paragraph to 80 columns (fixes existing/pasted text; textwidth only wraps as you actively type) |
 | `<leader>80`         | Reflow the whole file to 80 columns                                                                            |
 | `<leader>d`          | Toggle light/dark colour theme                                                                                 |
-| `<leader>p`          | Preview current markdown file in browser (via pandoc)                                                          |
+| `<leader>p`          | Preview current markdown file in browser (via pandoc); saves unsaved changes first and reports an error instead of opening a missing file if pandoc fails |
 | `<leader>e`          | Export current markdown file to PDF (via pandoc + wkhtmltopdf)                                                 |
+| `<leader>t`          | Insert a simple 2-column table skeleton (header + 2 data rows) below the current line                         |
 | `<leader>h`          | Open this shortcut reference (vim_shortcuts.md)                                                                |
 | `<leader>r`          | Force a full terminal repaint (fixes stray red blocks/redraw glitches some terminals leave behind)             |
 | `:MarkdownPreview`   | Same as `<leader>p`, callable directly                                                                        |
+| `:MarkdownInsertTable` | Same as `<leader>t`, callable directly                                                                      |
 | `:MarkdownExportPdf` | Same as `<leader>e`, callable directly                                                                        |
 | `:MarkdownHelp`      | Same as `<leader>h`, callable directly                                                                        |
 | `:RefreshTerminal`   | Same as `<leader>r`, callable directly                                                                        |

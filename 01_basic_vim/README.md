@@ -28,8 +28,14 @@ vim example_template.md
   column 81; `<leader>q` reflows the current paragraph and `<leader>80`
   reflows the whole file (for existing or pasted text); `<leader>w` toggles
   the limit off/on entirely
-- One-key preview to browser (`<leader>p`, via Pandoc)
+- One-key preview to browser (`<leader>p`, via Pandoc) — saves unsaved
+  changes first, reports an error instead of opening a missing file if
+  Pandoc fails
 - One-key PDF export (`<leader>e`, via Pandoc + wkhtmltopdf)
+- One-key table skeleton (`<leader>t`) — inserts a simple 2-column,
+  header + 2-data-row markdown table below the current line
+- Current line number highlighted (bold bright red on lime green) in both
+  light and dark themes
 - Everything else is just standard Vim — no plugin manager, no extra ecosystem
 
 Leader is `\` (backslash) by default.

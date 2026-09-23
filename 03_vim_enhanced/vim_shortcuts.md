@@ -69,8 +69,10 @@ Once `vimrc` is loaded, opening any `.md` / `.markdown` file in Vim automaticall
 - **Spell-check on by default** — misspelled words are underlined as you type (British English dictionary by default; change `spelllang` in `vimrc` for another variant). Use `]s` / `[s` to jump between misspelled words and `z=` for suggestions. Toggle it off entirely with `<leader>s` if it gets in the way.
 - **Fuzzy file finding** — `<leader>ff` opens fzf to fuzzy-search and open any file in the project (needs the `fzf` package installed).
 - **Fuzzy "save as"** — `<leader>sa` browses to a folder with fzf, then prompts for just the filename, instead of typing/tab-completing a whole path.
-- **One-key browser preview** — `<leader>p` renders the current file to HTML (via Pandoc) and opens it in your default browser, so you can see headings, tables, code blocks etc. rendered properly rather than as raw markdown syntax. Re-run it any time to refresh after edits.
+- **One-key browser preview** — `<leader>p` renders the current file to HTML (via Pandoc) and opens it in your default browser, so you can see headings, tables, code blocks etc. rendered properly rather than as raw markdown syntax. Re-run it any time to refresh after edits. Saves unsaved changes first, and reports an error instead of opening a missing file if Pandoc fails (e.g. on an unsaved-to-disk buffer).
 - **One-key PDF export** — `<leader>e` converts the current file straight to a shareable PDF (via Pandoc + wkhtmltopdf), written alongside the source file.
+- **One-key table skeleton** — `<leader>t` inserts a simple 2-column, header + 2-data-row markdown table below the current line, so you don't have to remember the pipe/dash syntax from scratch.
+- **Current line number stands out** — the active line's number is shown bold bright red on a lime green background, in both light and dark themes, so you can spot your cursor's row at a glance.
 - **All of standard Vim** — since this is plain Vim with a small config layered on top (not a distribution or heavy plugin stack), every normal Vim shortcut below still works exactly as usual, in any file type.
 
 This builds on the basic Vim setup with just the two features (fuzzy file finding, fuzzy save-as) worth the one extra dependency (fzf). For everything else — live-reloading preview, table auto-formatting, a table of contents, link checking, autocomplete, git integration — see the companion full-feature Neovim setup instead.
@@ -353,13 +355,15 @@ This builds on the basic Vim setup with just the two features (fuzzy file findin
 | `<leader>q`          | Reflow current paragraph to 80 columns (fixes existing/pasted text; textwidth only wraps as you actively type) |
 | `<leader>80`         | Reflow the whole file to 80 columns                                                                            |
 | `<leader>d`          | Toggle light/dark colour theme                                                                                 |
-| `<leader>p`          | Preview current markdown file in browser (via pandoc)                                                          |
+| `<leader>p`          | Preview current markdown file in browser (via pandoc); saves unsaved changes first and reports an error instead of opening a missing file if pandoc fails |
 | `<leader>e`          | Export current markdown file to PDF (via pandoc + wkhtmltopdf)                                                 |
+| `<leader>t`          | Insert a simple 2-column table skeleton (header + 2 data rows) below the current line                         |
 | `<leader>h`          | Open this shortcut reference (vim_shortcuts.md)                                                                |
 | `<leader>r`          | Force a full terminal repaint (fixes stray red blocks/redraw glitches some terminals leave behind)             |
 | `<leader>ff`         | Fuzzy-find and open a file (via fzf; needs the `fzf` package installed)                                        |
 | `<leader>sa`         | Save as — browse to a folder with fzf, then type just the filename                                             |
 | `:MarkdownPreview`   | Same as `<leader>p`, callable directly                                                                        |
+| `:MarkdownInsertTable` | Same as `<leader>t`, callable directly                                                                      |
 | `:MarkdownExportPdf` | Same as `<leader>e`, callable directly                                                                        |
 | `:MarkdownHelp`      | Same as `<leader>h`, callable directly                                                                        |
 | `:RefreshTerminal`   | Same as `<leader>r`, callable directly                                                                        |
