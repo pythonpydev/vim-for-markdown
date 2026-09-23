@@ -101,9 +101,26 @@ vim.api.nvim_create_user_command("MarkdownCheckLinks", function()
   end
 end, {})
 
+-- Insert a simple 2-column, header + 2-data-row markdown table skeleton
+-- below the current line, cursor left on "h1" ready to type over the
+-- placeholders — matches the same <leader>t in the basic/enhanced Vim
+-- setups. vim-table-mode (<leader>tm) still handles auto-aligning it (and
+-- any other table) as you edit.
+vim.api.nvim_create_user_command("MarkdownInsertTable", function()
+  local row = vim.api.nvim_win_get_cursor(0)[1]
+  vim.api.nvim_buf_set_lines(0, row, row, false, {
+    "| h1 | h2 |",
+    "| --- | --- |",
+    "| d1r1 | d2r1 |",
+    "| d1r2 | d2r2 |",
+  })
+  vim.api.nvim_win_set_cursor(0, { row + 1, 2 })
+end, {})
+
 vim.keymap.set("n", "<leader>eh", "<cmd>MarkdownExportHtml<CR>", { desc = "Export markdown to HTML and open in browser" })
 vim.keymap.set("n", "<leader>ep", "<cmd>MarkdownExportPdf<CR>", { desc = "Export markdown to PDF" })
 vim.keymap.set("n", "<leader>lc", "<cmd>MarkdownCheckLinks<CR>", { desc = "Check internal markdown links" })
+vim.keymap.set("n", "<leader>t", "<cmd>MarkdownInsertTable<CR>", { desc = "Insert a simple 2-column table skeleton" })
 
 -- Opens the bundled shortcut reference (nvim_shortcuts.md) in a split, the
 -- same way Neovim's own :help does — so :q closes just that split and drops
