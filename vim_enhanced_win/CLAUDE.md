@@ -48,6 +48,23 @@ restarts), `<leader>p`/`<leader>e` produce a preview/PDF, and — once fzf is
 installed per the README — `<leader>ff`/`<leader>sa` both work, in
 particular the `dir /b /s /ad` folder listing behind `<leader>sa`.
 
+**Known issue — terminal cursor colour (this Windows port only, not seen on
+the Linux [`03_vim_enhanced`](../03_vim_enhanced/CLAUDE.md) setup this was
+ported from):** the "Cursor shape + colour (terminal)" block (`guicursor` +
+`t_SI`/`t_EI`/`t_SR` sending DECSCUSR/OSC 12) did not visibly recolour the
+cursor in testing under Windows Terminal running console Vim on Windows 11, even though `:echo &t_EI` correctly showed the expected escape
+sequence once `_vimrc` was freshly (re)sourced — root cause not yet isolated
+(candidates: that specific Windows Terminal profile/version not honouring
+OSC 12, or something in the session resetting it after startup). Confirmed
+working reliably in **GVim** instead, where `hi Cursor guibg=#ff8c00`
+colours the GUI's own cursor directly and never touches this terminal-escape
+code path at all (skipped via `if !has('gui_running')`). If console-Vim
+cursor colour matters enough to chase further, start by testing the raw
+escape sequence directly in Windows Terminal outside Vim:
+`Write-Host -NoNewline "$([char]27)]12;#ff8c00$([char]7)"` (PowerShell) — if
+that alone doesn't recolour the cursor, it's a Windows Terminal/profile
+issue, not a vimrc one.
+
 ## Files
 
 Same set as [`03_vim_enhanced`](../03_vim_enhanced/CLAUDE.md#files), with
