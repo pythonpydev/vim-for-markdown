@@ -18,7 +18,12 @@ return {
     "iamcco/markdown-preview.nvim",
     cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
     ft = { "markdown" },
-    build = function() vim.fn["mkdp#util#install"]() end,
+    -- A plain shell command instead of vim.fn["mkdp#util#install"](): lazy.nvim
+    -- runs `build` right after cloning, before the plugin is on runtimepath,
+    -- so the Vimscript autoload function isn't sourced yet and errors with
+    -- "Unknown function: mkdp#util#install". The npm install achieves the
+    -- same result without depending on the plugin being loaded first.
+    build = "cd app && npm install",
     init = function()
       vim.g.mkdp_filetypes = { "markdown" }
       vim.g.mkdp_auto_close = false

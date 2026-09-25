@@ -60,7 +60,11 @@ vim.api.nvim_create_user_command("MarkdownExportHtml", function()
     vim.notify("HTML export failed", vim.log.levels.ERROR)
     return
   end
-  vim.fn.jobstart({ "xdg-open", out }, { detach = true })
+  if vim.fn.has("win32") == 1 then
+    vim.fn.jobstart({ "cmd", "/c", "start", "", out }, { detach = true })
+  else
+    vim.fn.jobstart({ "xdg-open", out }, { detach = true })
+  end
   vim.notify("Exported to " .. out)
 end, {})
 
