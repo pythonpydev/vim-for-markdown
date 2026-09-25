@@ -47,6 +47,32 @@ map("n", "<leader>fp", "<cmd>set filetype=python<CR>", { desc = "Switch filetype
 map("n", "<leader>fc", "<cmd>set filetype=css<CR>", { desc = "Switch filetype to CSS" })
 map("n", "<leader>fm", "<cmd>set filetype=markdown<CR>", { desc = "Switch filetype back to Markdown" })
 
+-- Bullet-list continuation outside markdown: Enter on a "- item" line (also
+-- "- [ ] " task items) starts the next line with the same marker and indent,
+-- in any filetype (plain notes, YAML lists, ...); Enter on a bullet with
+-- nothing after the marker removes it, ending the list. Markdown buffers get
+-- the richer autolist.nvim version instead (its buffer-local <CR> map in
+-- lua/plugins/markdown.lua takes priority over this global one). Only "- ",
+-- not "* ", since e.g. C/Java block comments already get " * " continued by
+-- Neovim itself and this would double it. Only in normal file buffers, so
+-- special buffers (command-line window, prompts) keep plain Enter.
+map("i", "<CR>", function()
+  local function feed(keys)
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(keys, true, false, true), "ni", false)
+  end
+  local line = vim.api.nvim_get_current_line()
+  local indent, marker, rest = line:match("^(%s*)(%-%s+%[[ xX]%]%s+)(.*)$")
+  if not indent then indent, marker, rest = line:match("^(%s*)(%-%s+)(.*)$") end
+  if vim.fn.pumvisible() == 1 or not indent or vim.bo.buftype ~= "" then
+    feed("<CR>")
+  elseif rest == "" and vim.fn.col(".") > #line then
+    vim.api.nvim_set_current_line("")
+  else
+    marker = marker:gsub("%[[xX]%]", "[ ]")
+    feed("<CR>" .. (vim.bo.autoindent and "" or indent) .. marker)
+  end
+end, { desc = "Newline, continuing a '- ' bullet list" })
+
 -- Window navigation
 map("n", "<C-h>", "<C-w>h", { desc = "Go to left window" })
 map("n", "<C-j>", "<C-w>j", { desc = "Go to lower window" })

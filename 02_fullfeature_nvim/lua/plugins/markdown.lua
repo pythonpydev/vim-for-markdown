@@ -51,11 +51,23 @@ return {
     ft = { "markdown" },
     config = function()
       require("autolist").setup()
-      local map = vim.keymap.set
-      map("i", "<CR>", "<CR><cmd>AutolistNewBullet<cr>", { buffer = true })
-      map("n", "o", "o<cmd>AutolistNewBullet<cr>", { buffer = true })
-      map("n", "<CR>", "<cmd>AutolistToggleCheckbox<cr><CR>", { buffer = true })
-      map("n", "<C-r>", "<cmd>AutolistRecalculate<cr>", { buffer = true })
+      -- Buffer-local maps must be set per markdown buffer: `config` only runs
+      -- once (for whichever buffer triggered the lazy load), so setting them
+      -- here directly left every later markdown buffer without them.
+      local function set_maps(buf)
+        local map = function(mode, lhs, rhs) vim.keymap.set(mode, lhs, rhs, { buffer = buf }) end
+        map("i", "<CR>", "<CR><cmd>AutolistNewBullet<cr>")
+        map("n", "o", "o<cmd>AutolistNewBullet<cr>")
+        map("n", "<CR>", "<cmd>AutolistToggleCheckbox<cr><CR>")
+        map("n", "<C-r>", "<cmd>AutolistRecalculate<cr>")
+      end
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = "markdown",
+        callback = function(ev) set_maps(ev.buf) end,
+      })
+      for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+        if vim.bo[buf].filetype == "markdown" then set_maps(buf) end
+      end
     end,
   },
 

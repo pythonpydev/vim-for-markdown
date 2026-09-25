@@ -46,6 +46,33 @@ augroup markdown_setup
   autocmd BufNewFile,BufRead *.md,*.markdown setlocal filetype=markdown
 augroup END
 
+" --- Bullet-list continuation --------------------------------------------
+" Pressing Enter on a "- item" line (also "- [ ] " task items) starts the
+" next line with the same marker and indent, in any filetype (plain notes,
+" YAML lists, ...). In markdown "* " and "+ " bullets continue too; elsewhere
+" they don't, since e.g. C/Java block comments already get " * " continued by
+" Vim itself and this would double it. Pressing Enter on a bullet with
+" nothing after the marker removes it, ending the list. Only in normal file
+" buffers, so special buffers (command-line window, prompts) keep plain Enter.
+" Done with a mapping rather than Vim's 'comments'/'formatoptions+=r' route,
+" because that would also add a "- " to lines auto-wrapped by textwidth=80.
+" A <Cmd> mapping (not <expr>) so the line is read when Enter is actually
+" processed; an <expr> is evaluated early when keys arrive in a burst (e.g.
+" pasted), before the text typed just before Enter is in the buffer.
+function! s:ContinueList() abort
+  let l:bullets = &filetype ==# 'markdown' ? '[-*+]' : '-'
+  let l:m = matchlist(getline('.'), '^\(\s*\)\(' . l:bullets . '\s\+\%(\[[ xX]\]\s\+\)\=\)\(.*\)$')
+  if pumvisible() || empty(l:m) || &buftype !=# ''
+    call feedkeys("\<CR>", 'ni')
+  elseif l:m[3] ==# '' && col('.') > len(getline('.'))
+    call setline('.', '')
+  else
+    let l:marker = substitute(l:m[2], '\[[xX]\]', '[ ]', '')
+    call feedkeys("\<CR>" . (&l:autoindent ? '' : l:m[1]) . l:marker, 'ni')
+  endif
+endfunction
+inoremap <CR> <Cmd>call <SID>ContinueList()<CR>
+
 " --- Spell-check --------------------------------------------------------
 " Toggle spell-check with <leader>s (leader defaults to \)
 nnoremap <leader>s :set spell!<CR>
