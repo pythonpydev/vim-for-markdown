@@ -31,7 +31,8 @@ set cursorlineopt=number
 
 " --- Cursor shape + colour (terminal) --------------------------------------
 " Block shape in every mode, but blinking in Insert/Replace and steady in
-" Normal/Visual/Command-line — plus an orange cursor colour throughout.
+" Normal/Visual/Command-line — plus a bright yellow cursor in Insert mode
+" and orange everywhere else.
 " guicursor drives shape+blink in GUI Vim; t_SI/t_EI/t_SR send the DECSCUSR
 " escape codes terminal Vim needs for the same effect (some terminfo entries
 " don't wire up guicursor to the terminal on their own, so these are set
@@ -43,7 +44,8 @@ set cursorlineopt=number
 set guicursor=n-v-c-sm:block-blinkon0,i-ci-ve:block-blinkwait10-blinkon250-blinkoff250,r-cr-o:block-blinkon0
 if !has('gui_running')
   let s:cursor_orange = "\<Esc>]12;#ff8c00\x07"
-  let &t_SI = s:cursor_orange . "\<Esc>[1 q"  " Insert: blinking block
+  let s:cursor_yellow = "\<Esc>]12;#ffff00\x07"
+  let &t_SI = s:cursor_yellow . "\<Esc>[1 q"  " Insert: blinking bright-yellow block
   let &t_SR = s:cursor_orange . "\<Esc>[1 q"  " Replace: blinking block
   let &t_EI = s:cursor_orange . "\<Esc>[2 q"  " Normal/other: steady block
 endif
