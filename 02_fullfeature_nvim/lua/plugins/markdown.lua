@@ -45,7 +45,8 @@ return {
     },
   },
 
-  -- Auto-continue bullet/numbered lists on <CR>, and support renumbering.
+  -- Auto-continue bullet/numbered lists (and blockquotes, via
+  -- lua/config/lists.lua) on <CR>, and support renumbering.
   {
     "gaoDean/autolist.nvim",
     ft = { "markdown" },
@@ -56,7 +57,12 @@ return {
       -- here directly left every later markdown buffer without them.
       local function set_maps(buf)
         local map = function(mode, lhs, rhs) vim.keymap.set(mode, lhs, rhs, { buffer = buf }) end
-        map("i", "<CR>", "<CR><cmd>AutolistNewBullet<cr>")
+        -- Blockquotes ("> ") are continued by lua/config/lists.lua, which
+        -- autolist doesn't handle; everything else goes to autolist.
+        map("i", "<CR>", function()
+          local lists = require("config.lists")
+          if not lists.enter() then lists.feed("<CR><cmd>AutolistNewBullet<cr>") end
+        end)
         map("n", "o", "o<cmd>AutolistNewBullet<cr>")
         map("n", "<CR>", "<cmd>AutolistToggleCheckbox<cr><CR>")
         map("n", "<C-r>", "<cmd>AutolistRecalculate<cr>")

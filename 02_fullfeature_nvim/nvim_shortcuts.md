@@ -87,7 +87,7 @@ The leader key in this config is `Space` (not `\` as in plain Vim). Once set up,
 - **Static HTML/PDF export** — `<leader>eh` exports to a standalone HTML file and opens it; `<leader>ep` exports straight to PDF (both via Pandoc).
 - **Table auto-formatting** — toggle with `<leader>tm`; markdown tables realign their `|` columns as you edit. `<leader>t` inserts a simple 2-column, header + 2-data-row table skeleton below the current line to get started.
 - **Current line number highlighted** — a bold, theme-matched Catppuccin green marks the active line's number in both light and dark themes; ordinary numbers use a higher-contrast colour than the default too.
-- **Auto-continuing lists** — pressing Enter inside a bullet or numbered list automatically inserts the next marker; pressing Enter on an empty bullet removes it, ending the list. Outside markdown, `- ` bullets continue too, in any file type (plain notes, YAML lists, ...).
+- **Auto-continuing lists and blockquotes** — pressing Enter inside a bullet or numbered list automatically inserts the next marker; pressing Enter on an empty bullet removes it, ending the list. Outside markdown, `- ` bullets continue too, in any file type (plain notes, YAML lists, ...). Blockquotes continue too (markdown): Enter on a `> text` line starts the next with `> ` (nested `>> ` kept); Enter on an empty `> ` turns it into a bare `>` paragraph separator, and a second empty `> ` ends the quote. (Consecutive `> ` lines render as one paragraph, so use that `>` separator, or end a line with `\`, to keep lines apart.)
 - **Folding by heading** — collapse/expand sections with `za`/`zo`/`zc` (folds start open).
 - **Distraction-free writing mode** — `<leader>z` toggles a centered, chrome-free writing view.
 - **Word count / reading time** — shown live in the statusline whenever editing a markdown file.
@@ -106,7 +106,7 @@ The leader key in this config is `Space` (not `\` as in plain Vim). Once set up,
 
 |                |                                                                                                                |
 |----------------|----------------------------------------------------------------------------------------------------------------|
-| `Enter` (insert mode) | Continue the current bullet/numbered list (markdown), or a `- ` bullet in any other file type. On an empty bullet, remove it to end the list |
+| `Enter` (insert mode) | Continue the current bullet/numbered list (markdown), or a `- ` bullet in any other file type. On an empty bullet, remove it to end the list. In markdown, a `> quote` line continues with `> `; Enter on an empty `> ` makes a `>` paragraph separator, a second one ends the quote |
 | `<leader>p`    | Toggle live browser preview (markdown-preview.nvim)                                                            |
 | `<leader>eh`   | Export to HTML and open in browser                                                                             |
 | `<leader>ep`   | Export to PDF                                                                                                  |
