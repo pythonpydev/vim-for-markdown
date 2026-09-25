@@ -77,9 +77,9 @@ augroup markdown_setup
 augroup END
 
 " --- Bullet-list + blockquote continuation --------------------------------
-" Pressing Enter on a "- item" line (also "- [ ] " task items) starts the
-" next line with the same marker and indent, in any filetype (plain notes,
-" YAML lists, ...). In markdown "* " and "+ " bullets continue too; elsewhere
+" Pressing Enter (or o in Normal mode) on a "- item" line (also "- [ ] "
+" task items) starts the next line with the same marker and indent, in any
+" filetype (plain notes, YAML lists, ...). In markdown "* " and "+ " bullets continue too; elsewhere
 " they don't, since e.g. C/Java block comments already get " * " continued by
 " Vim itself and this would double it. Pressing Enter on a bullet with
 " nothing after the marker removes it, ending the list. Only in normal file
@@ -95,6 +95,30 @@ augroup END
 " processed; an <expr> is evaluated early when keys arrive in a burst (e.g.
 " pasted), before the text typed just before Enter is in the buffer.
 let s:quote_pat = '^\s*>\%(\s*>\)*\s\='
+" Splits a line into its markdown quote prefix, the prefix normalised to end
+" in a space, the text after the prefix, and any bullet match on that text
+" (indent, marker, rest), per the rules above.
+function! s:ParseLine(line) abort
+  let l:md = &filetype ==# 'markdown'
+  let l:q = l:md ? matchstr(a:line, s:quote_pat) : ''
+  let l:qn = l:q ==# '' || l:q =~# '\s$' ? l:q : l:q . ' '
+  let l:body = a:line[len(l:q):]
+  let l:bullets = l:md ? '[-*+]' : '-'
+  let l:m = matchlist(l:body, '^\(\s*\)\(' . l:bullets . '\s\+\%(\[[ xX]\]\s\+\)\=\)\(.*\)$')
+  return [l:q, l:qn, l:body, l:m]
+endfunction
+" What to type at the start of a new line continuing a:line ('' if a:line
+" isn't a bullet/quote). With 'autoindent', the new line already has
+" a:line's leading indent, so it's left off.
+function! s:ContinuePrefix(line) abort
+  let [l:q, l:qn, l:body, l:m] = s:ParseLine(a:line)
+  let l:pre = &l:autoindent ? l:qn[len(matchstr(l:q, '^\s*')):] : l:qn
+  if empty(l:m)
+    return l:pre
+  endif
+  let l:marker = substitute(l:m[2], '\[[xX]\]', '[ ]', '')
+  return l:pre . (l:q ==# '' && &l:autoindent ? '' : l:m[1]) . l:marker
+endfunction
 function! s:ContinueList() abort
   let l:line = getline('.')
   let l:at_end = col('.') > len(l:line)
@@ -102,24 +126,11 @@ function! s:ContinueList() abort
     call feedkeys("\<CR>", 'ni')
     return
   endif
-  let l:md = &filetype ==# 'markdown'
-  let l:q = l:md ? matchstr(l:line, s:quote_pat) : ''
-  let l:qn = l:q ==# '' || l:q =~# '\s$' ? l:q : l:q . ' '
-  " With 'autoindent', <CR> already copies the line's leading indent
-  let l:pre = &l:autoindent ? l:qn[len(matchstr(l:q, '^\s*')):] : l:qn
-  let l:body = l:line[len(l:q):]
-  let l:bullets = l:md ? '[-*+]' : '-'
-  let l:m = matchlist(l:body, '^\(\s*\)\(' . l:bullets . '\s\+\%(\[[ xX]\]\s\+\)\=\)\(.*\)$')
-  if !empty(l:m)
-    if l:m[3] ==# '' && l:at_end
-      call setline('.', l:qn)
-      call cursor(line('.'), len(l:qn) + 1)
-    else
-      let l:marker = substitute(l:m[2], '\[[xX]\]', '[ ]', '')
-      let l:indent = l:q ==# '' && &l:autoindent ? '' : l:m[1]
-      call feedkeys("\<CR>" . l:pre . l:indent . l:marker, 'ni')
-    endif
-  elseif l:q !=# '' && l:body =~# '^\s*$' && l:at_end
+  let [l:q, l:qn, l:body, l:m] = s:ParseLine(l:line)
+  if !empty(l:m) && l:m[3] ==# '' && l:at_end
+    call setline('.', l:qn)
+    call cursor(line('.'), len(l:qn) + 1)
+  elseif empty(l:m) && l:q !=# '' && l:body =~# '^\s*$' && l:at_end
     let l:prev = line('.') > 1 ? getline(line('.') - 1) : ''
     if l:prev =~# s:quote_pat && l:prev[len(matchstr(l:prev, s:quote_pat)):] =~# '^\s*$'
       call setline(line('.') - 1, '')
@@ -128,13 +139,15 @@ function! s:ContinueList() abort
     else
       call setline('.', substitute(l:q, '\s\+$', '', ''))
       call cursor(line('.'), col('$'))
-      call feedkeys("\<CR>" . l:pre, 'ni')
+      call feedkeys("\<CR>" . s:ContinuePrefix(l:line), 'ni')
     endif
   else
-    call feedkeys("\<CR>" . l:pre, 'ni')
+    call feedkeys("\<CR>" . s:ContinuePrefix(l:line), 'ni')
   endif
 endfunction
 inoremap <CR> <Cmd>call <SID>ContinueList()<CR>
+" o (open line below) continues bullets/quotes the same way.
+nnoremap <expr> o 'o' . (&buftype ==# '' ? <SID>ContinuePrefix(getline('.')) : '')
 
 " --- Spell-check --------------------------------------------------------
 " Toggle spell-check with <leader>s (leader defaults to \)

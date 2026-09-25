@@ -352,6 +352,7 @@ This builds on the basic Vim setup with just the two features (fuzzy file findin
 |                      |                                                                                                                |
 |----------------------|----------------------------------------------------------------------------------------------------------------|
 | `Enter` (insert mode) | On a `- item` line, start the next line with `- ` (same indent; `*`/`+` too in markdown). On an empty bullet, remove it to end the list. In markdown, a `> quote` line continues with `> `; Enter on an empty `> ` makes a `>` paragraph separator, a second one ends the quote |
+| `o` (normal mode) | Open a line below, continuing the current line's bullet/blockquote the same way as `Enter` |
 | `<leader>s`          | Toggle spell-check on/off (leader = `\` by default)                                                            |
 | `<leader>w`          | Toggle the 80-column limit (textwidth + guide line) on/off                                                     |
 | `<leader>q`          | Reflow current paragraph to 80 columns (fixes existing/pasted text; textwidth only wraps as you actively type) |
