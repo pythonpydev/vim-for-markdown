@@ -60,6 +60,7 @@ Once `vimrc` is loaded, opening any `.md` / `.markdown` file in Vim automaticall
 - **Fuzzy "save as"** — `<leader>sa` browses to a folder with fzf, then prompts for just the filename, instead of typing/tab-completing a whole path.
 - **One-key browser preview** — `<leader>p` renders the current file to HTML (via Pandoc) and opens it in your default browser, so you can see headings, tables, code blocks etc. rendered properly rather than as raw markdown syntax. Re-run it any time to refresh after edits.
 - **One-key PDF export** — `<leader>e` converts the current file straight to a shareable PDF (via Pandoc + wkhtmltopdf), written alongside the source file.
+- **Auto-continuing bullet lists** — pressing Enter on a `- item` line starts the next line with `- ` at the same indent, in any file type (plain notes, YAML lists, ...). In markdown `* ` / `+ ` bullets continue too, and `- [ ]` task items continue as unchecked. Pressing Enter on an empty bullet removes it, ending the list.
 - **All of standard Vim** — since this is plain Vim with a small config layered on top (not a distribution or heavy plugin stack), every normal Vim shortcut below still works exactly as usual, in any file type.
 
 This builds on the basic Vim setup with just the two features (fuzzy file finding, fuzzy save-as) worth the one extra dependency (fzf). For everything else — live-reloading preview, table auto-formatting, a table of contents, link checking, autocomplete, git integration — see the companion full-feature Neovim setup instead.
@@ -337,6 +338,7 @@ This builds on the basic Vim setup with just the two features (fuzzy file findin
 
 |                      |                                                                                                                |
 |----------------------|----------------------------------------------------------------------------------------------------------------|
+| `Enter` (insert mode) | On a `- item` line, start the next line with `- ` (same indent; `*`/`+` too in markdown). On an empty bullet, remove it to end the list |
 | `<leader>s`          | Toggle spell-check on/off (leader = `\` by default)                                                            |
 | `<leader>w`          | Toggle the 80-column limit (textwidth + guide line) on/off                                                     |
 | `<leader>q`          | Reflow current paragraph to 80 columns (fixes existing/pasted text; textwidth only wraps as you actively type) |

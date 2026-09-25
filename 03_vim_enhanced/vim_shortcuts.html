@@ -208,6 +208,7 @@ Once <kbd>vimrc</kbd> is loaded, opening any <kbd>.md</kbd> / <kbd>.markdown</kb
 <li><strong>One-key PDF export</strong> — <kbd>&lt;leader&gt;e</kbd> converts the current file straight to a shareable PDF (via Pandoc + wkhtmltopdf), written alongside the source file.</li>
 <li><strong>One-key table skeleton</strong> — <kbd>&lt;leader&gt;t</kbd> inserts a simple 2-column, header + 2-data-row markdown table below the current line, so you don't have to remember the pipe/dash syntax from scratch.</li>
 <li><strong>Current line number stands out</strong> — the active line's number is shown bold bright red on a lime green background, in both light and dark themes, so you can spot your cursor's row at a glance.</li>
+<li><strong>Auto-continuing bullet lists</strong> — pressing Enter on a <kbd>- item</kbd> line starts the next line with <kbd>- </kbd> at the same indent, in any file type (plain notes, YAML lists, ...). In markdown <kbd>* </kbd> / <kbd>+ </kbd> bullets continue too, and <kbd>- [ ]</kbd> task items continue as unchecked. Pressing Enter on an empty bullet removes it, ending the list.</li>
 <li><strong>All of standard Vim</strong> — since this is plain Vim with a small config layered on top (not a distribution or heavy plugin stack), every normal Vim shortcut below still works exactly as usual, in any file type.</li>
 </ul>
 <p style="font-size:0.85rem;color:#a6adc8;">
@@ -510,6 +511,7 @@ Example: <kbd>di"</kbd> deletes inside quotes, <kbd>ca(</kbd> changes a parenthe
 <section class="card">
 <h2>This Setup's Custom Shortcuts</h2>
 <table>
+<tr><td class="key"><kbd>Enter</kbd> (insert mode)</td><td>On a <kbd>- item</kbd> line, start the next line with <kbd>- </kbd> (same indent; <kbd>*</kbd>/<kbd>+</kbd> too in markdown). On an empty bullet, remove it to end the list</td></tr>
 <tr><td class="key"><kbd>&lt;leader&gt;s</kbd></td><td>Toggle spell-check on/off (leader = <kbd>\</kbd> by default)</td></tr>
 <tr><td class="key"><kbd>&lt;leader&gt;w</kbd></td><td>Toggle the 80-column limit (textwidth + guide line) on/off</td></tr>
 <tr><td class="key"><kbd>&lt;leader&gt;q</kbd></td><td>Reflow current paragraph to 80 columns (fixes existing/pasted text; textwidth only wraps as you actively type)</td></tr>
